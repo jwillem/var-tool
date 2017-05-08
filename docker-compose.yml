@@ -1,15 +1,8 @@
 version: '3'
 services:
-  docker-master:
-    build: ./docker-master
-    image: docker-master
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    environment:
-      - "COMPOSE_PROJECT_NAME=docker_master"
-    # network_mode: "service:[proxy]"
   minio:
     image: minio/minio
+    hostname: data
     environment:
       - "MINIO_ACCESS_KEY=2HjzPsSAS9JamoPbKg2e"
       - "MINIO_SECRET_KEY=nZkqIbhtvorQVlzGtslQnVmqulSwpulNMxZsGEBh"
@@ -19,6 +12,15 @@ services:
       - /var/minio/export:/var/minio/export
       - /var/minio/config:/root/.minio
     command: server /var/minio/export
+
+  docker-master:
+    build: ./docker-master
+    image: docker-master
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/minio/export/users:/var/data/users/
+
+
   # proxy:
   #   build: ./proxy
   #   image: proxy
