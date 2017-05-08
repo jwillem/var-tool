@@ -1,0 +1,38 @@
+version: '3'
+services:
+  docker-master:
+    build: ./docker-master
+    image: docker-master
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "COMPOSE_PROJECT_NAME=docker_master"
+    # network_mode: "service:[proxy]"
+  minio:
+    image: minio/minio
+    environment:
+      - "MINIO_ACCESS_KEY=2HjzPsSAS9JamoPbKg2e"
+      - "MINIO_SECRET_KEY=nZkqIbhtvorQVlzGtslQnVmqulSwpulNMxZsGEBh"
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/minio/export:/var/minio/export
+      - /var/minio/config:/root/.minio
+    command: server /var/minio/export
+  # proxy:
+  #   build: ./proxy
+  #   image: proxy
+  #   network_mode: "service:[proxy]"
+  # server:
+  #   build: ./server
+  #   image: server
+  #   network_mode: "service:[proxy]"
+  # client:
+  #   build: ./client
+  #   image: client
+  #   network_mode: "service:[proxy]"
+
+    # todo pro container:
+    # - ports
+    # - network
+    # - volumes
