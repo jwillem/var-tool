@@ -6,6 +6,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/minio/export/users:/var/data/users/
+    environment:
+      - "TOKEN=ZYX321"
 
   # proxy:
   #   build: ./proxy
@@ -40,7 +42,18 @@ services:
       # and zookeeper
       - "2181:2181"
     environment:
-      # TODO ip of container
-      - "ADVERTISED_HOST="
       - "ADVERTISED_PORT=9092"
 
+  kafka-websocket:
+      build: ./kafka-websocket
+      image: kafka-websocket
+      ports:
+        - "7080:7080"
+
+# networks:
+#   internal:
+#     driver: bridge
+#     ipam:
+#       driver: default
+#       config:
+#         - subnet: 10.5.0.0/16

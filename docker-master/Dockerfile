@@ -34,3 +34,4 @@ WORKDIR /usr/src/app
 
 # ENTRYPOINT ["kafkacat"]
 # CMD ["java", "-jar", "app-standalone.jar"]
+CMD ls -la | kafkacat -b kafka -t log$TOKEN
