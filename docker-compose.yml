@@ -1,25 +1,11 @@
 version: '3'
 services:
-  minio:
-    image: minio/minio
-    hostname: data
-    environment:
-      - "MINIO_ACCESS_KEY=2HjzPsSAS9JamoPbKg2e"
-      - "MINIO_SECRET_KEY=nZkqIbhtvorQVlzGtslQnVmqulSwpulNMxZsGEBh"
-    ports:
-      - "9000:9000"
-    volumes:
-      - /var/minio/export:/var/minio/export
-      - /var/minio/config:/root/.minio
-    command: server /var/minio/export
-
   docker-master:
     build: ./docker-master
     image: docker-master
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/minio/export/users:/var/data/users/
-
 
   # proxy:
   #   build: ./proxy
@@ -34,7 +20,27 @@ services:
   #   image: client
   #   network_mode: "service:[proxy]"
 
-    # todo pro container:
-    # - ports
-    # - network
-    # - volumes
+  minio:
+    image: minio/minio
+    hostname: data
+    environment:
+      - "MINIO_ACCESS_KEY=2HjzPsSAS9JamoPbKg2e"
+      - "MINIO_SECRET_KEY=nZkqIbhtvorQVlzGtslQnVmqulSwpulNMxZsGEBh"
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/minio/export:/var/minio/export
+      - /var/minio/config:/root/.minio
+    command: server /var/minio/export
+
+  kafka:
+    image: spotify/kafka
+    ports:
+      - "9092:9092"
+      # and zookeeper
+      - "2181:2181"
+    environment:
+      # TODO ip of container
+      - "ADVERTISED_HOST="
+      - "ADVERTISED_PORT=9092"
+

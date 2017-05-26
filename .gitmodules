@@ -1,0 +1,3 @@
+[submodule "kafka-websocket"]
+  path = kafka-heatmap
+  url = https://github.com/b/kafka-websocket
