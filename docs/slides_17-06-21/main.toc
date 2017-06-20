@@ -1,0 +1,7 @@
+\beamer@endinputifotherversion {3.36pt}
+\select@language {ngerman}
+\beamer@sectionintoc {2}{Kontext}{3}{0}{1}
+\beamer@sectionintoc {3}{Docker}{7}{0}{2}
+\beamer@sectionintoc {4}{Inspiration}{11}{0}{3}
+\beamer@sectionintoc {5}{„VAR-Tool“}{16}{0}{4}
+\beamer@sectionintoc {6}{Ausblick}{23}{0}{5}

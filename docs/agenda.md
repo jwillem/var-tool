@@ -1,0 +1,34 @@
+# Gliederung
+- Einleitung
+  - Kontext
+    - Bisheriger Ablauf
+      - den Studenten mag die echten Netzwerkgrenzen nicht klar zu sein
+  - Anforderungen
+    - Pro Container ein Jar-Upload
+  - Erhoffte Vorteile
+- Docker
+  - Description
+    - Virtualisierung?
+    - Kernel-Extensions,.. Details
+  - Container
+    - Dockerfiles
+    - Images
+    - Networks, sockets, ports
+  - Docker-Compose
+    - templates of apps
+    - set of containers
+- Inspiration
+  - tmux panes
+  - cloud ides
+    - Eclipse Che
+  - xterm.js & ttyd
+- "VAR-Tool"
+  - UI-Mockup
+  - Aktivitätsdiagramme
+  - Netzwerkdiagram
+  - Deploymentdiagram
+  - Compose-File
+- Fazit & Ausblick
+  - EFP
+  - BA
+  - Veröffentlichung?
