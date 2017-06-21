@@ -1,5 +1,5 @@
 # Fdb version 3
-["pdflatex"] 1498007777 "tex/main.tex" "main.pdf" "main" 1498007777
+["pdflatex"] 1498009688 "tex/main.tex" "main.pdf" "main" 1498009689
   "/usr/local/texlive/2016/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/adobe/zapfding/pzdr.tfm" 1136768653 1528 f853c4d1b4e0550255e02831fdc8496f ""
   "/usr/local/texlive/2016/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -200,6 +200,7 @@
   "images/compose.pdf" 1498005274 13675 acff24a7d7a94f8e297980c8c8244f55 ""
   "images/container_intro.pdf" 1497897742 17702 6b103b072d728ae704d8f42e6d2c2a0f ""
   "images/deployment.pdf" 1498006268 30700 0a28a1251ff89fdd958584e5dbe7f8f8 ""
+  "images/dockerfile.pdf" 1498009688 11785 1f1f3709b8ae49805c8ceff00212d9e4 ""
   "images/eclipse.pdf" 1498002118 450035 86adff292f538c98c06e01c7e777ff59 ""
   "images/network.pdf" 1497902859 633637 a415faae9a723bdbc51fdf90ed8e7ba0 ""
   "images/sequence.pdf" 1497999030 67266 98d99c7f6e71b05d368019af39be893c ""
@@ -207,11 +208,11 @@
   "images/ttyd.pdf" 1497901872 130560 3d27eb5a8a27d062060a23200470447a ""
   "images/ui-mockup.pdf" 1497904832 65981 64dcd0983b960dffe93a58b9d33cbc4c ""
   "images/xterm.pdf" 1497901583 482547 fcd6dc234836538058bf05656ad20d07 ""
-  "main.aux" 1498007775 6544 4403007fc5eb81cd37bd68b561fe7749 ""
-  "main.nav" 1498007775 3538 4ea8e8645f0eba57a0fb28317e899158 ""
-  "main.out" 1498007775 221 4aa6d40f9177ddefa02e2b7c0f0028e0 ""
-  "main.toc" 1498007775 296 804ee7090905b02b0175266697fbf3ad ""
-  "tex/main.tex" 1498007772 3373 6bf611786ffa251c4a4c3e09654de1f4 ""
+  "main.aux" 1498009689 6544 4403007fc5eb81cd37bd68b561fe7749 ""
+  "main.nav" 1498009689 3538 4ea8e8645f0eba57a0fb28317e899158 ""
+  "main.out" 1498009689 221 4aa6d40f9177ddefa02e2b7c0f0028e0 ""
+  "main.toc" 1498009689 296 804ee7090905b02b0175266697fbf3ad ""
+  "tex/main.tex" 1498009542 3446 5861953574523c5fb1705807886639e3 ""
   (generated)
   "main.nav"
   "main.out"

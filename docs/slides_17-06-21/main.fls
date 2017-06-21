@@ -319,6 +319,7 @@ INPUT main.nav
 INPUT images/container_intro.pdf
 INPUT main.toc
 INPUT main.toc
+INPUT images/dockerfile.pdf
 INPUT images/tmux.pdf
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm
 INPUT /usr/local/texlive/2016/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm
