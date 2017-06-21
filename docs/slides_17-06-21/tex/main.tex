@@ -34,19 +34,59 @@
 
 \section{Kontext}
 \begin{frame}{Bisheriger Ablauf}
+  \begin{itemize}
+    \item Student soll (verteilte) Aufgaben programmieren
+    \item Es wird die Benutzung von schwergewichtigen IDEs vorgeschlagen
+    \item Eclipse, Netbeans bieten Integrationen zu diversen Servern/Technologien
+    \item Funktionsweise kann in gegebener (Dev-)Umgebung getestet werden
+  \end{itemize}
+  \begin{itemize}
+    \item Gefahr: keine echte Verteilung
+    \item Umgebung verschieden zu Production
+    \item Ergebnis kann sich erheblich unterscheiden (Seiteneffekte,..)
+    \item Einrichtung der Dev-Umgebung kann dennoch schwierig sein
+  \end{itemize}
 \end{frame}
 \begin{frame}{Anforderungen}
+  \begin{itemize}
+    \item Dozent beschreibt mit generischer Lösung ein Experiment mit fester Anzahl an Instanzen
+    \item Pro Instanz: Angabe von Name, Ports, Standard-Command
+    \item Studenten sollen mithilfe der Experimente gewisse Aufgaben lösen
+    \item Getrennte Netzwerke zwischen Experimenten und nach Außen
+    \item Upload von Programmpaketen im Webend
+    \item Angabe von Main-Class und Argumentenliste
+    \item Einzelnes Starten der Instanzen
+    \item Ausgabe der dabei geschehenen Logs (stdout, stderror)
+  \end{itemize}
 \end{frame}
 \begin{frame}{Erhoffte Vorteile}
+  \begin{itemize}
+    \item Dev-Umgebung zum Starten der Instanzen muss nicht zwingend eingerichtet werden
+    \item Konsistentes UI des Tools zwischen Aufgaben \break (\& Vorlesungen?)
+    \item Durch Hochladen der Programmpakete pro Instanz wird Verteilung auf Netzwerkebene (hoffentlich) besser wahrgenommen
+    \item Hostnamen der Instanzen nicht localhost
+  \end{itemize}
 \end{frame}
 
 \section{Docker}
 \begin{frame}{Description}
+  \begin{itemize}
+    \item Software zum Deployment von Applikationen innerhalb von Containern
+    \item Ähnelt Vorgehensweise von Virtuellen Maschienen
+    \item Im Gegegsatz: Mithilfe von Docker-Deamon laufen Prozesse direkt auf Host-OS
+    \item Dennoch isoliert (CGroups, Kernel Namespaces, SELinux, AppArmor,..)
+    \item Keine spezifische Infrastruktur vorgeschrieben (bspw. ESXi)
+    \item Beste Unterstützung durch Linux-Derivat (Kernel-Tricks)
+    \item Mittlerweile lauffähige Konzepte auf Osx, Windows
+  \end{itemize}
 \end{frame}
 \begin{frame}{Container}
   \begin{itemize}
-    \item Deskriptive \& triviale Beschreibung eines Systems und dessen Bestandteile
-    \item Trägt implizit zur Dokumentation bei
+    \item Deskriptive \& triviale Beschreibung eines Systems und dessen Bestandteile (Rezept)
+    \item Instruktionen um Abhähigkeiten zu installieren, Konfigurationen vorzunehmen und Build-Steps auszuführen
+    \item Kein Transferieren von großen Builds nötig, da Image durch Dockerfile erzeugbar
+    \item Granulare Sub-Images
+    \item Trägt implizit zur Dokumentation bei: Jede Änderung an einem Container muss im Rezept ergänzt werden!
   \end{itemize}
 \end{frame}
 \begin{frame}{Dockerfile}
@@ -56,8 +96,12 @@
 \end{frame}
 \begin{frame}{Docker-Compose}
   \begin{itemize}
+    \item Tool zur Unterstützung von Docker-Cli
     \item Definition von Services als Bestandteil einer App
-    \item Dokumentation!
+    \item Ergänzende Angabe von Konfigurations-Parametern an Containern: Volume-Mounts, Ports, Env-Vars, Netzwerke,..
+    \item Muss sonst bei \texttt{docker exec} Command angegeben werden
+    \item Getrennte Environments für Dev, Test, Prod: \texttt{docker-compose[.dev].yml}
+    \item Zentrale Dokumentation!
   \end{itemize}
 \end{frame}
 
