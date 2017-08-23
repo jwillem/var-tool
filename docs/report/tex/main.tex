@@ -2,29 +2,13 @@
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
 \usepackage{graphicx}
+\usepackage[printonlyused]{acronym}
 \usepackage{blindtext}
 
-\graphicspath{ {images/} }
+\graphicspath{{images/}}
 
 \begin{document}
-  \begin{titlepage}
-    {\includegraphics{logo.pdf}}\par
-    \vspace{4cm}
-    \centering
-    {\scshape\LARGE Fakultät für Informatik \\ Hochschule Mannheim\par}
-    \vspace{1cm}
-    {\scshape\Large Studienarbeit\par}
-    \vspace{.5cm}
-    {\huge\bfseries Virtualisierte Arbeitsumgebung\break für den Test verteilter Systeme\par}
-
-    {\LARGE Microservice-Architektur mit Docker, Kafka, Clojure \& Elm\par}
-    \vspace{1cm}
-    {\Large\itshape Jan-Philipp Willem\par}
-    \vspace{.5cm}
-    {\Large im Sommersemster 2017}
-    \vfill
-  \end{titlepage}
-
+  \include{tex/title}
   \begin{abstract}
     \blindtext
   \end{abstract}
@@ -32,54 +16,13 @@
   \tableofcontents
   \clearpage
 
-  \chapter{Problemstellung}
-  \section{Bisheriger Ablauf}
-  \section{Anforderungen}
-
-  \chapter{Grundlagen}
-  \section{Funktionale Programmierung}
-  \section{Verwendete Programmiersprachen}
-  \subsection{Clojure}
-  \subsection{Elm}
-  \section{Eingesetzte Webtechnologien}
-  \subsection{Websockets}
-  \subsection{Single-Page-Applications}
-  \section{Microservices}
-  \section{Container-Virtualisierung mit Docker}
-  Docker ist eine Software zum Deployment von Applikationen innerhalb von Containern.
-  Dabei ähnelt die Vorgehensweise der von Virtuellen Maschienen(VM).
-  Im Vergleich zu VMs, laufen die Prozesse der Container jedoch direkt auf dem Host-Betriebssystem.
-  Trotz dieser Tatsache sind die Prozesse mithilfe von unter Anderem Control-Groups und Kernel Namespaces voneinander isoliert.
-  Weiterhin hat man die Möglichkeit mit gängigen Mandatory-Access-Control(MAC) -Frameworks wie SE-Linux oder App-Armor die Rechte innerhalb der Container zu beschränken.
-  Als Anforderung besteht keine spezifische Hardware-Infrastruktur wie bei beispielsweise VMWare ESXi.
-  Ebenso ist Docker mittlerweile auf allen gängigen Betriebssystemen lauffähig, wobei Linux-Derivate die beste Unterstützung erhalten.
-  \par
-  Ein Container wird mithilfe eines Dockerfiles beschrieben.
-  Darin werden deskriptive Instruktionen definiert um Abhängigkeiten zu installieren, Konfigurationen vorzunehmen und andere Build-Steps auszuführen.
-  Ein spezifischer Container wird als Image bezeichnet und setzt sich aus granularen Sub-Images zusammen.
-  Beim Erzeugen von Images eigener Dockerfiles müssen im Vergleich zu VMs keine großen Dateien transferiert werden, da sie aus ihrem Rezept reproduzierbar sind. 
-  Es besteht auch die Möglichkeit, von anderen Dockerfiles zu erben und diese über das Netzwerk verteilt bereitzustellen.
-  Falls die über eine Docker-Registry angebotenen Schichten eines Containers noch nicht auf dem eigenen Rechner vorhanden sind, so werden diese heruntergeladen.
-  \section{Apache Kafka}
-
-  \chapter{VAR-Tool}
-  % \section{Analyse}
-  % \subsection{As-Is}
-  % \subsection{To-Be}
-  \section{UI-Mockup}
-  \section{Architektur}
-  \subsection{Geschäftsprozesse}
-  \subsection{Deployment}
-  \section{Umsetzung}
-  \subsection{Backend}
-  \subsection{Frontend}
-  \section{Installation}
-
+  \input{tex/introduction}
+  \input{tex/fundamentals}
+  \input{tex/main-matter}
   \chapter{Fazit}
 
-%   \begin{appendices}
-%     \chapter{Some Appendix}
-%     The contents...
-%   \end{appendices}
+  \begin{appendices}
+    \input{tex/acronyms}
+  \end{appendices}
 
 \end{document}
