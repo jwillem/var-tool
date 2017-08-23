@@ -3,26 +3,42 @@
 \usepackage[ngerman]{babel}
 \usepackage{graphicx}
 \usepackage[printonlyused]{acronym}
+\usepackage{hyperref}
+\usepackage[toc,page]{appendix}
 \usepackage{blindtext}
 
 \graphicspath{{images/}}
 
 \begin{document}
   \include{tex/title}
+
   \begin{abstract}
     \blindtext
   \end{abstract}
 
+  \pagenumbering{roman}
+  \setcounter{page}{3}
+  
   \tableofcontents
+  \listoffigures
+  \listoftables
   \clearpage
+
+  \pagenumbering{arabic}
 
   \input{tex/introduction}
   \input{tex/fundamentals}
   \input{tex/main-matter}
-  \chapter{Fazit}
+  \input{tex/conclusion}
 
-  \begin{appendices}
-    \input{tex/acronyms}
-  \end{appendices}
+  \pagenumbering{alph}
+  % \begin{appendices}
+  \addcontentsline{toc}{chapter}{Quellenverzeichnis}
+  \chapter*{Quellenverzeichnis}
+  \clearpage
+
+  \addcontentsline{toc}{chapter}{Abkürzungsverzeichnis}
+  \input{tex/acronyms}
+  % \end{appendices}
 
 \end{document}
