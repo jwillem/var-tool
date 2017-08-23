@@ -5,7 +5,6 @@
 \usepackage{blindtext}
 
 \graphicspath{ {images/} }
-18-20.09
 
 \begin{document}
   \begin{titlepage}
@@ -47,6 +46,20 @@
   \subsection{Single-Page-Applications}
   \section{Microservices}
   \section{Container-Virtualisierung mit Docker}
+  Docker ist eine Software zum Deployment von Applikationen innerhalb von Containern.
+  Dabei ähnelt die Vorgehensweise der von Virtuellen Maschienen(VM).
+  Im Vergleich zu VMs, laufen die Prozesse der Container jedoch direkt auf dem Host-Betriebssystem.
+  Trotz dieser Tatsache sind die Prozesse mithilfe von unter Anderem Control-Groups und Kernel Namespaces voneinander isoliert.
+  Weiterhin hat man die Möglichkeit mit gängigen Mandatory-Access-Control(MAC) -Frameworks wie SE-Linux oder App-Armor die Rechte innerhalb der Container zu beschränken.
+  Als Anforderung besteht keine spezifische Hardware-Infrastruktur wie bei beispielsweise VMWare ESXi.
+  Ebenso ist Docker mittlerweile auf allen gängigen Betriebssystemen lauffähig, wobei Linux-Derivate die beste Unterstützung erhalten.
+  \par
+  Ein Container wird mithilfe eines Dockerfiles beschrieben.
+  Darin werden deskriptive Instruktionen definiert um Abhängigkeiten zu installieren, Konfigurationen vorzunehmen und andere Build-Steps auszuführen.
+  Ein spezifischer Container wird als Image bezeichnet und setzt sich aus granularen Sub-Images zusammen.
+  Beim Erzeugen von Images eigener Dockerfiles müssen im Vergleich zu VMs keine großen Dateien transferiert werden, da sie aus ihrem Rezept reproduzierbar sind. 
+  Es besteht auch die Möglichkeit, von anderen Dockerfiles zu erben und diese über das Netzwerk verteilt bereitzustellen.
+  Falls die über eine Docker-Registry angebotenen Schichten eines Containers noch nicht auf dem eigenen Rechner vorhanden sind, so werden diese heruntergeladen.
   \section{Apache Kafka}
 
   \chapter{VAR-Tool}
