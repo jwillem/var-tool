@@ -1,7 +1,26 @@
 \chapter{Problemstellung}
-\blindtext
+
 \section{Bisheriger Ablauf}
 Der typische Ablauf bei Programmieraufgaben in der Vorlesung \ac{VAR} ist folgendermaßen:
 Ein Student soll verteilte Aufgaben programmieren, welche es nötig machen, zunächst eine passende lokale Entwicklungsumgebung zu installieren.
-Dazu wird die Nutzung von schwergewichtigen \acp{IDE} wie Eclipse oder Netbeans vorgeschlagen. Grund dafür, sind die Integrationen von diversen Serven und Technologien, welche eingesetzt werden sollen.
+Dazu wird die Nutzung von schwergewichtigen \acp{IDE} wie Eclipse oder Netbeans vorgeschlagen.
+Grund dafür sind die schon vorhandenen \ac{IDE}-Integrationen von diversen Serven und Technologien, welche eingesetzt werden sollen.
+Dennoch führt schon dieser Prozess bei einigen Studenten zu Problemen.
+\par
+Gelingt es die Integrationen einzurichten, so kann die Funktionsweise der eigenen Programme getestet werden.
+Allerdings führt diese Herangehensweise zu keiner echten Verteilung, da alle Services auf der gleichen Maschine ausgeführt werden.
+Das Ergebnis kann sich bei einer Trennung der Services auf Netzwerkebene erheblich unterscheiden oder ist unter Umständen gar nicht lauffähig.
+\par
+[TODO: Beispiel einer Aufgabe z.B. RMI-Chat]
 \section{Anforderungen}
+Ziel soll es sein, dass ein Dozent Experimente definieren kann, welche eine gegebene Anzahl an Instanzen besitzen.
+Eine jeweilige Instanz wird durch die Angabe eines Namens, dessen geöffneten Netzwerk-Ports und eine Argumentenliste beschrieben.
+Die Konfiguration der Systeme soll mit Hilfe eines Dockerfiles realisiert werden.
+Die Instanzen sollen sich gegenseitig erreichen können, jedoch soll der Zugriff auf Instanzen anderer Nutzer und dem Internet unterbunden werden.
+\par
+Weiterhin sollen von einem Studenten gewisse Aufgaben innerhalb dieser Experimente gelöst werden.
+Dies geschieht durch einzelnes Hochladen der Programmpakete (Jar, War,..) pro Instanz und der Angabe einer Main-Class und einer Argumentenliste.
+Anschließend kann eine Instanz gestartet werden und dessen Ausgaben beobachtet werden.
+\par
+Der Grund für das getrennte Hochladen ist darin begründet, dass die echte Verteilung der Instanzen so von den Studenten eventuell besser verstanden werden kann.
+
