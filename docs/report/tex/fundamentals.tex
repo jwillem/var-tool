@@ -1,19 +1,41 @@
 \chapter{Grundlagen}
+\label{ch:fundamentals}
+
+Dieses Kapitel möchte einige Grundlagen definieren, welche im Kapitel \ref{ch:main-matter} vorausgesetzt werden.
+Es handelt von der Definition des funktionalen Programmier-Paradigmas, welches in den Sprachen Clojure und Elm zum Einsatz kommt.
+Weiterhin werden die Webtechnologien Websockets und \acp{SPA} erklärt, welche das Frontend des \nameref{ch:main-matter}'s nutzt. 
+Die Architektur der ganzen Applikation wird maßgebend durch die Trennung in unabängige Microservices beeinflusst, welche mit Docker realisiert ist.
+Als Integrationspunkt fungiert Apache Kafka, welches ebenso in diesen Kapitel erklärt wird.
 \section{Funktionale Programmierung}
+Die funktionale Programmierung gehört zu den Deklarativen Programmierparadigmen und stellt neben der imperativen und objektorientierten Programmierung eines der am Häufigsten genutzten Paradigmen dar.
+Anders als bei imperativen Sprachen, unterscheiden sich funktionale Sprachen vor Allem an ihrer Unveränderbarkeit von Variablen. 
+Es wird dabei angestrebt, bei einer Veränderung des Zustandes einer Variablen nicht den Inhalt dessen Referenz zu verändern, sondern stattdessen eine Kopie zurückzuliefern.
+Es wurde gezeigt, dass dies ebenso sehr performant funktionieren kann (TODO: add quote).
+\par
+
 \section{Verwendete Programmiersprachen}
 \subsection{Clojure}
+\blindtext
+\par
+\blindtext
 \subsection{Elm}
+\blindtext
+\par
+\blindtext
 \section{Eingesetzte Webtechnologien}
 \subsection{Websockets}
-\subsection{Single-Page-Applications}
+\blindtext
+\subsection{\aclp{SPA}}
+\blindtext
 \section{Microservices}
+\blindtext
 \section{Container-Virtualisierung mit Docker}
 \begin{figure}
   \centering
   \includegraphics[scale=0.75]{docker.pdf}
   \par
   \caption{Schichten einer Virtualisierung mit Docker}
-  \label{figure:layers-docker}
+  \label{fig:layers-docker}
 \end{figure}
 Docker\footnote{\url{https://docs.docker.com/}} ist eine Software zum Deployment von Applikationen innerhalb von Containern.
 Im Vergleich zu \acp{VM}, ähnelt sich die Vorgehensweise, jedoch laufen die Prozesse der Container direkt auf dem Host-Betriebssystem.
@@ -21,7 +43,7 @@ Trotz dieser Tatsache sind die Prozesse mithilfe von \ac{u.A.} Control-Groups un
 Weiterhin hat man die Möglichkeit mit gängigen Mandatory-Access-Control-Frameworks wie SE-Linux oder App-Armor die Rechte innerhalb der Container zu beschränken.
 Als Anforderung besteht keine spezifische Hardware-Infrastruktur wie bei beispielsweise VMWare ESXi.
 Ebenso ist Docker mittlerweile auf allen gängigen Betriebssystemen lauffähig, wobei Linux-Derivate die beste Unterstützung erhalten.
-Dies ist damit begründet, dass die Docker-Engine (\ac{Abb.} \ref{figure:layers-docker}) auf den einzelnen Betriebssystemen verschieden aussieht.
+Dies ist damit begründet, dass die Docker-Engine (\ac{Abb.}~\ref{fig:layers-docker}) auf den einzelnen Betriebssystemen verschieden aussieht.
 \par
 Ein Container wird mithilfe eines Dockerfiles beschrieben.
 Darin werden deskriptive Instruktionen definiert um Abhängigkeiten zu installieren, Konfigurationen vorzunehmen und andere Build-Steps auszuführen.
@@ -41,4 +63,8 @@ Es bietet sich auch an, getrennte Environments für Development, Test und Produc
 
 \section{Apache Kafka}
 Zwei\footnote{\url{https://kafka.apache.org/documentation/}}
+\par
+\blindtext
+\par
+\blindtext
 
