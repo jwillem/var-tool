@@ -1,17 +1,35 @@
 \chapter{Grundlagen}
 \label{ch:fundamentals}
 
-Dieses Kapitel möchte einige Grundlagen definieren, welche im Kapitel \ref{ch:main-matter} vorausgesetzt werden.
+Dieses Kapitel möchte einige Grundlagen definieren, welche im Kapitel~\ref{ch:main-matter} vorausgesetzt werden.
 Es handelt von der Definition des funktionalen Programmier-Paradigmas, welches in den Sprachen Clojure und Elm zum Einsatz kommt.
 Weiterhin werden die Webtechnologien Websockets und \acp{SPA} erklärt, welche das Frontend des \nameref{ch:main-matter}'s nutzt. 
 Die Architektur der ganzen Applikation wird maßgebend durch die Trennung in unabängige Microservices beeinflusst, welche mit Docker realisiert ist.
 Als Integrationspunkt fungiert Apache Kafka, welches ebenso in diesen Kapitel erklärt wird.
 \section{Funktionale Programmierung}
 Die funktionale Programmierung gehört zu den Deklarativen Programmierparadigmen und stellt neben der imperativen und objektorientierten Programmierung eines der am Häufigsten genutzten Paradigmen dar.
-Anders als bei imperativen Sprachen, unterscheiden sich funktionale Sprachen vor Allem an ihrer Unveränderbarkeit von Variablen. 
-Es wird dabei angestrebt, bei einer Veränderung des Zustandes einer Variablen nicht den Inhalt dessen Referenz zu verändern, sondern stattdessen eine Kopie zurückzuliefern.
-Es wurde gezeigt, dass dies ebenso sehr performant funktionieren kann (TODO: add quote).
 \par
+Anders als bei imperativen Sprachen, unterscheiden sich funktionale Sprachen vor Allem an ihrer Unveränderbarkeit (engl. Immutability) von Variablen und ihrer Datenstrukturen.
+Es wird dabei angestrebt, bei einer Veränderung des Zustandes einer Variablen nicht den Inhalt ihrer Referenz zu verändern, sondern stattdessen eine Kopie der Daten zurückzuliefern.
+In der Praxis(TODO: quote) hat sich vielfach herausgestellt, dass sich die häufig verwendete Veränderbarkeit (engl. Mutability) von Zuständen gerade auch in der objektorientierten Programmierung zu häufigen Fehlerquellen führen kann.
+Es wurde jedoch gezeigt, dass das Zurückgeben von Kopien ebenso sehr performant funktionieren kann (TODO: add quote).
+\par
+Wie der Name schon vermuten lässt basiert die funktionale Programmierung zu größten Teilen aus Funktionen. 
+Diese sind meist als Module gekapselt, welche nach einer bestimmten Aufgabe gruppiert sind. 
+Anders als bei Objekten möchte man offen mit den an die Funktionen übergebenen Daten umgehen und sie nicht in der Implementierung verstecken (engl. Information-Hiding). 
+Dabei sollte eine Funktion nur diese eine Aufgabe erledigen, welche mithilfe ihres Namens beschrieben wird. 
+Um dieses deterministische Verhalten zu erreichen, werden oft sehr granulare Funktionen erstellt, welche anschließend durch eine Komposition miteinander vereint werden\footnote{\texttt{f(x) = g(x) • h(x) <=> f(x) = h(g(x))}}.
+Jegliche Seiteneffekte sollten vermieden werden, was man auch als reine (engl. pure) Funktionen bezeichnet.
+So sollten Funktionen als Daten-Transformationen verstanden werden: Man erhält Daten, verarbeitet diese und gibt sie anschließend transformiert zurück, welches als \ac{EVA}-Prinzip bekannt ist.
+\par
+Da Funktionen selbst auch Typen darstellen, können sie ebenso als Parameter anderer Funktionen dienen, welche man dann auch als Funktionen Höherer Ordnung (engl. Higher Order Funktions) bezeichnet.
+Mit dieser Voraussetzung können Verhalten aus einer aufzurufenden Funktion heraus gelöst werden, womit das jeweilige Verhalten dynamisch bestimmt werden kann.
+Dies wird oft auch als Callbacks bezeichnet.
+Hilfreich sind bei dieser Vorgehensweise auch so genannte Lamdas, welche Funktionen darstellen, die inline definiert werden können und somit anonym \ac{bzw.} Unbenannt sind.
+\par
+Grundsätzlich werden funktionale Sprachen nochmals zwischen solchen Sprachen unterschieden, welche neben anderen Paradigmen auch das Funktionale Paradigma unterstützen und solchen, welche ausschließlich auf den Prinzipien der funktionalen Programmierung beruhen.
+Die sogenannten reinen funktionalen Sprachen verbieten \ac{bspw.} eine jegliche Möglichkeit Seiteneffekte auszuführen und sind sehr oft strikt typisiert.
+In Multiparadigmensprachen beruhen viele funktionale Prinzipien auf deren Einsatz und der generellen Bedachtheit des jeweiligen Programmierers \ac{bzw.} des einsetzenden Teams.
 
 \section{Verwendete Programmiersprachen}
 \subsection{Clojure}
