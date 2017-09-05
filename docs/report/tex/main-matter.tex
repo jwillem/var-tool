@@ -1,53 +1,81 @@
 \chapter{VAR-Tool}
 \label{ch:main-matter}
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{container_intro_centered.pdf}
+    \par
+    \caption{Container-Übersicht}
+    \label{fig:container-intro}
+  \end{figure}
+  \blindtext
+  \clearpage
+
 % \section{Analyse}
 % \subsection{As-Is}
 % \subsection{To-Be}
+
 \section{UI-Mockup}
-  \begin{figure}
+\blindtext
+\begin{landscape}
+  \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.2,page=1]{ui-mockup.pdf}
+    \fbox{\includegraphics[scale=0.4,page=1]{ui-mockup.pdf}}
     \par
     \caption{UI-Mockup: Übersicht der Experimente}
     \label{fig:ui-mockup-1}
   \end{figure}
-  \begin{figure}
+  \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.2,page=2]{ui-mockup.pdf}
+    \fbox{\includegraphics[scale=0.4,page=2]{ui-mockup.pdf}}
     \par
     \caption{UI-Mockup: Experimentenansicht mit verschiedenen Zuständen pro Instanz}
-    TODO: improve witdths of mockups
     \label{fig:ui-mockup-2}
   \end{figure}
+\end{landscape}
 \section{Architektur}
+\blindtext
 \subsection{Geschäftsprozesse}
-  \begin{figure}
+\blindtext
+\begin{landscape}
+  \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{sequence.pdf}
+    \includegraphics[scale=0.5]{sequence.pdf}
     \par
     \caption{Sequenzdiagramm}
     \label{fig:sequence}
   \end{figure}
+\end{landscape}
 \subsection{Netzwerkgrenzen}
-  \begin{figure}
+\blindtext
+  \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.2]{network.pdf}
+    \includegraphics[scale=0.5]{network.pdf}
     \par
     \caption{Netzwerkdiagramm}
     \label{fig:network}
   \end{figure}
 \subsection{Deployment}
-  \begin{figure}
+\blindtext
+\begin{landscape}
+  \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.3]{deployment.pdf}
+    \includegraphics[scale=0.5]{deployment.pdf}
     \par
     \caption{Deploymentdiagramm}
     \label{fig:deployment}
   \end{figure}
+\end{landscape}
 \section{Umsetzung}
+\blindtext
 \subsection{Server}
+\blindtext
+\blindtext
+\blindtext
 \subsection{Client}
+\blindtext
+\blindtext
+\blindtext
 \section{Installation}
-Als erstes wird das Projekt mithilfe von \texttt{git clone \url{https://github.com/jwillem/docker-var.git}} heruntergeladen.
-Um die Applikation zu starten, werden zunächst die Installationen von Docker und Docker-Compose benötigt.
+Als erstes wird das Projekt mithilfe von \texttt{git clone \url{https://github.com/jwillem/var-tool.git}} heruntergeladen.
+Um die Applikation zu starten, werden zunächst die Installationen von Docker\footnote{\url{https://www.docker.com/community-edition}} und Docker-Compose\footnote{\url{https://docs.docker.com/compose/install/}} benötigt.
 Nach einem Ausführen von \texttt{docker-compose build} im Projektverzeichnis kann die App mit \texttt{docker-compose up} gestartet werden.
