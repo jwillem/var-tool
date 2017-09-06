@@ -4,7 +4,7 @@
 ### Clojure ###
 pom.xml
 pom.xml.asc
-*.jar
+# *.jar
 *.class
 /lib/
 /classes/
@@ -383,3 +383,7 @@ Session.vim
 tags
 
 # End of https://www.gitignore.io/api/osx,vim,elm,java,node,latex,linux,clojure,leiningen
+
+# ignore user-submissions
+data/submissions/*
+!data/submissions/.keep
