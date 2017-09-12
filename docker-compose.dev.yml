@@ -1,0 +1,43 @@
+version: '3'
+services:
+  client:
+    build: ./client
+    image: var-tool/client:latest
+    ports:
+      - "8080:8080"
+      - "9485:9485" # hot-reload brunch
+    volumes:
+      - "./client:/usr/src/app"
+      - /usr/src/app/node_modules
+      - /usr/src/app/yarn-offline-mirror
+      - /usr/src/app/elm-stuff
+      - /usr/src/app/public
+    # network_mode: "host"
+    command: yarn start
+  # server:
+  #   build: ./server
+  #   image: var-tool/server:latest
+  #   network_mode: "host"
+  # docker-master:
+  #   build: ./docker-master
+  #   image: var-tool/docker-master:latest
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /var/minio/export/users:/var/data/users/
+  #   environment:
+  #     - "TOKEN=ZYX321"
+  kafka:
+    image: spotify/kafka:latest
+    ports:
+      - "9092:9092"
+      # and zookeeper
+      - "2181:2181"
+    environment:
+      - "ADVERTISED_PORT=9092"
+  kafka-websocket:
+    build: ./kafka-websocket
+    image: var-tool/kafka-websocket:latest
+    ports:
+      - "7080:7080"
+    # network_mode: "host"
+

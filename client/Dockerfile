@@ -30,5 +30,4 @@ RUN yarn install
 RUN yarn run prod
 
 # bind to nginx dir
-RUN rm -r /usr/share/nginx/html
-RUN ln -s /usr/src/app/public /usr/share/nginx/html
+RUN ln -s /usr/src/app/public /usr/share/nginx/html/
