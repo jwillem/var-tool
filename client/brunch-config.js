@@ -1,7 +1,7 @@
 module.exports = {
   config: {
     paths: {
-      watched: ["app"]
+      watched: ["src"]
     },
     files: {
       javascripts: {
@@ -13,11 +13,14 @@ module.exports = {
     },
     plugins: {
       elmBrunch: {
-        mainModules: ["app/elm/Main.elm"],
+        mainModules: ["src/elm/Main.elm"],
         outputFolder: "public/js/"
       },
       sass: {
         mode: "native"
+      },
+      babel: {
+        presets: ['es2015', 'latest']
       }
     }
   }
