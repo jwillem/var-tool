@@ -1,59 +1,54 @@
 version: '3'
 services:
-  docker-master:
-    build: ./docker-master
-    image: docker-master
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /var/minio/export/users:/var/data/users/
-    environment:
-      - "TOKEN=ZYX321"
-
-  # proxy:
-  #   build: ./proxy
-  #   image: proxy
-  #   network_mode: "service:[proxy]"
   # server:
   #   build: ./server
-  #   image: server
-  #   network_mode: "service:[proxy]"
-  # client:
-  #   build: ./client
-  #   image: client
-  #   network_mode: "service:[proxy]"
+  #   image: var-tool/server:latest
+  #   network_mode: "host"
+  #   networks:
+  #     - external
 
-  # minio:
-  #   image: minio/minio
-  #   hostname: data
-  #   environment:
-  #     - "MINIO_ACCESS_KEY=2HjzPsSAS9JamoPbKg2e"
-  #     - "MINIO_SECRET_KEY=nZkqIbhtvorQVlzGtslQnVmqulSwpulNMxZsGEBh"
-  #   ports:
-  #     - "9000:9000"
+  client:
+    build: ./client
+    image: var-tool/client:latest
+    network_mode: "host"
+    networks:
+      - external
+
+  # docker-master:
+  #   build: ./docker-master
+  #   image: var-tool/docker-master:latest
   #   volumes:
-  #     - /var/minio/export:/var/minio/export
-  #     - /var/minio/config:/root/.minio
-  #   command: server /var/minio/export
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #     - /var/minio/export/users:/var/data/users/
+  #   environment:
+  #     - "TOKEN=ZYX321"
+  #   networks:
+  #     - internal
 
   kafka:
-    image: spotify/kafka
+    image: spotify/kafka:latest
     ports:
       - "9092:9092"
       # and zookeeper
       - "2181:2181"
     environment:
       - "ADVERTISED_PORT=9092"
+    networks:
+      - internal
+      - external
 
   kafka-websocket:
       build: ./kafka-websocket
-      image: kafka-websocket
+      image: var-tool/kafka-websocket:latest
       ports:
         - "7080:7080"
+      network_mode: "host"
+      networks: 
+        - external
 
-# networks:
-#   internal:
-#     driver: bridge
-#     ipam:
-#       driver: default
-#       config:
-#         - subnet: 10.5.0.0/16
+networks:
+  internal:
+    driver: bridge
+    internal: true
+  external:
+    driver: bridge
