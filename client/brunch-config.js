@@ -20,7 +20,7 @@ module.exports = {
         mode: "native"
       },
       babel: {
-        presets: ['es2015', 'latest']
+        presets: ['env']
       }
     }
   }

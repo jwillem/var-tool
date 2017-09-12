@@ -2,10 +2,8 @@ module Main exposing (..)
 
 import WebSocket
 import Html exposing (..)
-
-
--- import Html.Attributes exposing (..)
--- import Html.Events exposing (..)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 
 
 main =
@@ -17,14 +15,22 @@ main =
         }
 
 
+path =
+    "ws://localhost:7080/v2/broker/?topics=logZYX321"
+
+
 
 -- MODEL
 
 
 type alias Message =
-    { topic : String
-    , message : String
-    }
+    String
+
+
+
+-- { topic : String
+-- , message : String
+-- }
 
 
 type alias Model =
@@ -42,24 +48,21 @@ init =
 -- UPDATE
 
 
-type
-    Msg
-    -- = Input String
-    -- | Send
-    = NewMessage Message
+type Msg
+    = Input String
+    | Send
+    | NewMessage Message
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg { input, messages } =
-    -- let
-    --     path =
-    --         "ws://localhost:7080/v2/broker/?topics=logZYX321"
-    -- in
     case msg of
-        -- Input newInput ->
-        --     ( Model newInput messages, Cmd.none )
-        -- Send ->
-        --     ( Model "" messages, WebSocket.send path input )
+        Input newInput ->
+            ( Model newInput messages, Cmd.none )
+
+        Send ->
+            ( Model "" messages, WebSocket.send path input )
+
         NewMessage msg ->
             ( Model input (msg :: messages), Cmd.none )
 
@@ -70,11 +73,7 @@ update msg { input, messages } =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    let
-        path =
-            "ws://localhost:7080/v2/broker/?topics=logZYX321"
-    in
-        WebSocket.listen path NewMessage
+    WebSocket.listen path NewMessage
 
 
 
@@ -85,11 +84,12 @@ view : Model -> Html Msg
 view model =
     div []
         [ div [] (List.map viewMessage model.messages)
-          -- , input [ onInput Input ] []
-          -- , button [ onClick Send ] [ text "Send" ]
+        , input [ onInput Input ] []
+        , button [ onClick Send ] [ text "Send" ]
         ]
 
 
 viewMessage : Message -> Html msg
 viewMessage msg =
-    div [] [ text msg.message ]
+    -- div [] [ text msg.message ]
+    div [] [ text msg ]

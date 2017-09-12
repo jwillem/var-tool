@@ -1,19 +1,22 @@
 version: '3'
 services:
+  client:
+    build: ./client
+    image: var-tool/client:latest
+    ports:
+      - "8080:8080"
+      - "9485:9485" # hot-reload brunch
+    volumes:
+      - "./client:/usr/src/app"
+      - /usr/src/app/node_modules
+      - /usr/src/app/yarn-offline-mirror
+      - /usr/src/app/elm-stuff
+    # network_mode: "host"
+    command: yarn start
   # server:
   #   build: ./server
   #   image: var-tool/server:latest
   #   network_mode: "host"
-  #   networks:
-  #     - external
-
-  client:
-    build: ./client
-    image: var-tool/client:latest
-    network_mode: "host"
-    networks:
-      - external
-
   # docker-master:
   #   build: ./docker-master
   #   image: var-tool/docker-master:latest
@@ -22,9 +25,6 @@ services:
   #     - /var/minio/export/users:/var/data/users/
   #   environment:
   #     - "TOKEN=ZYX321"
-  #   networks:
-  #     - internal
-
   kafka:
     image: spotify/kafka:latest
     ports:
@@ -33,22 +33,13 @@ services:
       - "2181:2181"
     environment:
       - "ADVERTISED_PORT=9092"
-    networks:
-      - internal
-      - external
-
   kafka-websocket:
-      build: ./kafka-websocket
-      image: var-tool/kafka-websocket:latest
-      ports:
-        - "7080:7080"
-      network_mode: "host"
-      networks: 
-        - external
+    build: ./kafka-websocket
+    image: var-tool/kafka-websocket:latest
+    ports:
+      - "7080:7080"
+    # network_mode: "host"
 
-networks:
-  internal:
-    driver: bridge
-    internal: true
-  external:
-    driver: bridge
+volumes:
+  node_modules:
+  elm-stuff:
