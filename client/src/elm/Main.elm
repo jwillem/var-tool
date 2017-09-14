@@ -4,6 +4,7 @@ import WebSocket
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Encode exposing (encode, object, string, int)
 
 
 main =
@@ -15,22 +16,15 @@ main =
         }
 
 
-path =
-    "ws://localhost:7080/v2/broker/?topics=logZYX321"
-
-
 
 -- MODEL
 
 
 type alias Message =
+    -- { topic : String
+    -- , message : String
+    -- }
     String
-
-
-
--- { topic : String
--- , message : String
--- }
 
 
 type alias Model =
@@ -45,13 +39,34 @@ init =
 
 
 
+-- TODO: build config-type
+
+
+url : String
+url =
+    -- "ws://localhost:7080/v2/broker/?topics="
+    "ws://localhost:4242/ws"
+
+
+topic : String
+topic =
+    "rmichat_XYZ"
+
+
+path : String
+path =
+    -- url ++ topic
+    url
+
+
+
 -- UPDATE
 
 
 type Msg
     = Input String
     | Send
-    | NewMessage Message
+    | NewMessage String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -61,7 +76,31 @@ update msg { input, messages } =
             ( Model newInput messages, Cmd.none )
 
         Send ->
-            ( Model "" messages, WebSocket.send path input )
+            let
+                message : String -> Json.Encode.Value
+                message input =
+                    Json.Encode.object
+                        [ ( "type", string "command" )
+                        , ( "subtype", string "add-input" )
+                        , ( "container-id", int 1 )
+                        , ( "stdin", string input )
+                        ]
+
+                -- string ("{type:'command','subtype':'add-input','container-id':1,'stdin':'" ++ input ++ "}")
+                kafkaMessage : Json.Encode.Value
+                kafkaMessage =
+                    Json.Encode.object
+                        [ ( "topic", string topic )
+                        , ( "message", message input )
+                        ]
+
+                body =
+                    encode 0 kafkaMessage
+
+                _ =
+                    Debug.log body body
+            in
+                ( Model "" messages, WebSocket.send path body )
 
         NewMessage msg ->
             ( Model input (msg :: messages), Cmd.none )
