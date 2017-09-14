@@ -1,3 +1,0 @@
-[submodule "kafka-websocket"]
-	path = kafka-websocket
-	url = git@github.com:jwillem/kafka-websocket.git
