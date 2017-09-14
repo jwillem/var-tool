@@ -6,17 +6,3 @@ services:
     ports:
       - "80:80"
     # network_mode: "host"
-  kafka:
-    image: spotify/kafka:latest
-    ports:
-      - "9092:9092"
-      # and zookeeper
-      - "2181:2181"
-    environment:
-      - "ADVERTISED_PORT=9092"
-  kafka-websocket:
-    build: ./kafka-websocket
-    image: var-tool/kafka-websocket:latest
-    ports:
-      - "7080:7080"
-    # network_mode: "host"
