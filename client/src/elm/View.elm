@@ -18,6 +18,8 @@ view model =
                 [ ( "display", "flex" )
                 , ( "flex-wrap", "wrap" )
                 , ( "height", "100%" )
+
+                -- , ( "flex-direction", "column" )
                 ]
             ]
             (List.map viewInstance instances)
@@ -27,11 +29,11 @@ viewInstance : Instance -> Html Msg
 viewInstance instance =
     div
         [ style
-            [ ( "flex", "1" )
-            , ( "display", "flex" )
+            [ ( "display", "flex" )
+            , ( "height", "calc(100vh / 2)" ) -- TODO use dynamic value
+            , ( "width", "calc(100vw / 2)" )
             , ( "flex-direction", "column" )
-            , ( "flex-basis", "50%" )
-            , ( "flex-grow", "0" )
+            , ( "justify-content", "space-between" )
             ]
         ]
         [ (viewLogs instance.logs)
@@ -41,7 +43,12 @@ viewInstance instance =
 
 viewInput : Instance -> Html Msg
 viewInput instance =
-    div [ style [ ( "display", "flex" ) ] ]
+    div
+        [ style
+            [ ( "display", "flex" )
+            , ( "flex", "0 0 18pt" )
+            ]
+        ]
         [ input
             [ placeholder "..."
             , onKeyDown (KeyDown instance.id)
@@ -58,10 +65,10 @@ viewLogs : List Log -> Html Msg
 viewLogs logs =
     div
         [ style
-            [ ( "flex", "1" )
-            , ( "overflow-x", "scroll" )
+            [ ( "overflow-x", "scroll" )
             , ( "display", "flex" )
             , ( "flex-direction", "column-reverse" )
+            , ( "padding", "4pt 0" )
             ]
         ]
         (List.map viewLog logs)
@@ -69,4 +76,10 @@ viewLogs logs =
 
 viewLog : Log -> Html Msg
 viewLog log =
-    div [] [ text log ]
+    div
+        [ style
+            [ ( "word-wrap", "break-word" )
+            , ( "padding", "2pt 8pt" )
+            ]
+        ]
+        [ text log ]

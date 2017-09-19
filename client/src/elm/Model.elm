@@ -22,13 +22,13 @@ init =
               , input = ""
               , status = "foo"
               }
+            , { id = 3
+              , name = "ChatClient"
+              , logs = []
+              , input = ""
+              , status = "foo"
+              }
 
-            -- , { id = 3
-            --   , name = "ChatClient"
-            --   , logs = []
-            --   , input = ""
-            --   , status = "foo"
-            --   }
             -- , { id = 4
             --   , name = "ChatClient"
             --   , logs = []

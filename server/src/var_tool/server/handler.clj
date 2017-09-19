@@ -51,7 +51,7 @@
                                  :payload {:log (str "\"" input "\" from Client!")
                                            :instanceId instanceId}}
                         message-json (json/write-str message)]
-                  ;; (println "new command: " command-keyword)
+                  (println "new command: " command-keyword)
                   ;; (println "as message: " message-json)
                   (send! channel message-json))))))
 
