@@ -4,22 +4,27 @@ services:
     build: ./client
     image: var-tool/client:latest
     ports:
-      - "8080:8080"
+      - "80:8080"
       - "9485:9485" # hot-reload brunch
     volumes:
       - "./client:/usr/src/app"
       # overwrite these folders from previous mount
-      - /usr/src/app/node_modules
-      - /usr/src/app/yarn-offline-mirror
-      - /usr/src/app/elm-stuff
-      - /usr/src/app/public
+      - "/usr/src/app/node_modules"
+      - "/usr/src/app/yarn-offline-mirror"
+      - "/usr/src/app/elm-stuff"
+      - "/usr/src/app/public"
     command: yarn start
 
   server:
     build: ./server
     image: var-tool/server:latest
     ports:
-      - "3000:3000"
+      - "8080:8080"
+    environment:
+      - IS_DEV=true
+        - PORT=8080
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./server:/usr/src/app"
+    command: lein run
 
