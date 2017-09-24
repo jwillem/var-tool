@@ -1,25 +1,36 @@
 module Encoders exposing (..)
 
-import Json.Encode exposing (Value, encode, object, string, int)
+import Json.Encode exposing (Value, encode, object, string, int, null)
 import Types exposing (..)
 
 
-encodeToCommand : InstanceId -> String -> String
-encodeToCommand instanceId input =
-    encode 0 (command instanceId input)
+valueToString : Value -> String
+valueToString value =
+    encode 0 value
 
 
-command : InstanceId -> String -> Value
-command instanceId input =
+requestExperimentsCommand : String
+requestExperimentsCommand =
     object
-        [ ( "type", string "command" )
-        , ( "subtype", string "add-input" )
-        , ( "payload", (payload instanceId input) )
+        [ ( "kind", string "command" )
+        , ( "subkind", string "request-experiments" )
+        , ( "payload", null )
         ]
+        |> valueToString
 
 
-payload : InstanceId -> String -> Value
-payload instanceId input =
+addInputCommand : AddInputPayload -> String
+addInputCommand payload =
+    object
+        [ ( "kind", string "command" )
+        , ( "subkind", string "add-input" )
+        , ( "payload", (addInputPayload payload) )
+        ]
+        |> valueToString
+
+
+addInputPayload : AddInputPayload -> Value
+addInputPayload { input, instanceId } =
     object
         [ ( "input", string input )
         , ( "instanceId", int instanceId )

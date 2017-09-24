@@ -1,6 +1,6 @@
 module Decoders exposing (..)
 
-import Json.Decode exposing (Decoder, int, string, bool, list, decodeString, succeed, fail, andThen, map2, field)
+import Json.Decode exposing (..)
 import Json.Decode.Pipeline exposing (decode, required, resolve)
 import Types exposing (..)
 
@@ -17,7 +17,8 @@ logMessageDecoder payload =
 
 logPayloadDecoder : Decoder Message
 logPayloadDecoder =
-    map2 LogPayload
+    map3 LogPayload
+        (field "experimentId" string)
         (field "instanceId" int)
         (field "log" string)
         |> andThen logMessageDecoder

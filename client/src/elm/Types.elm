@@ -1,19 +1,35 @@
 module Types exposing (..)
 
+import Dict exposing (..)
+
 
 type alias Model =
-    { instances : Instances
+    { experiments : Experiments
     , config : Config
     }
 
 
-type alias InstanceId =
-    Int
+type alias Experiment =
+    { name : String
+    , lecturer : String
+    , class : String
+    , numberOfInstances : Int
+    , instances : Instances
+    }
+
+
+type alias Experiments =
+    Dict Int Experiment
+
+
+type alias InstanceLocator =
+    ( String, Int )
 
 
 type alias Instance =
-    { id : InstanceId
-    , name : String
+    { id : Int
+    , mainClass : String
+    , arguments : String
     , status : String
     , input : String
     , logs : List Log
@@ -21,7 +37,7 @@ type alias Instance =
 
 
 type alias Instances =
-    List Instance
+    Dict Int Instance
 
 
 type alias Log =
@@ -37,21 +53,36 @@ type alias Keycode =
 
 
 type Msg
-    = Input InstanceId String
-    | Send InstanceId
+    = Input InstanceLocator String
+    | Send InstanceLocator
+    | KeyDown InstanceLocator Keycode
     | NewMessage String
-    | KeyDown InstanceId Keycode
 
 
-type CommandPayload
-    = String
+
+-- type Command
+--     = RequestExperimentsCommand
+--     | AddInputCommand AddInputPayload
+--     | ChangeMainClassCommand
+--     | StartInstanceCommand StartInstancePayload
+--     | StopInstanceCommand StopInstancePayload
 
 
-type alias Command =
-    { kind : String
-    , subkind : String
-    , payload : CommandPayload
+type alias AddInputPayload =
+    { experimentId : String
+    , instanceId : Int
+    , input : String
     }
+
+
+type alias StartInstancePayload =
+    { experimentId : String
+    , instanceId : Int
+    }
+
+
+type alias StopInstancePayload =
+    StartInstancePayload
 
 
 type alias MessageBase =
@@ -62,26 +93,14 @@ type alias MessageBase =
 
 type Message
     = LogMessage LogPayload
-    | DataMessage DataPayload
     | ReplyMessage ReplyPayload
 
 
 type alias LogPayload =
-    { instanceId : InstanceId
+    { experimentId : String
+    , instanceId : Int
     , log : Log
     }
-
-
-type alias Experiment =
-    { name : String }
-
-
-type alias Experiments =
-    List Experiment
-
-
-type alias DataPayload =
-    { experiments : Experiments }
 
 
 type alias ReplyPayload =

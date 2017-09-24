@@ -1,6 +1,8 @@
 module Update exposing (..)
 
 import WebSocket
+import Dict exposing (..)
+import Maybe exposing (..)
 import Types exposing (..)
 import Encoders exposing (..)
 import Decoders exposing (..)
@@ -9,38 +11,96 @@ import Decoders exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Input instanceId newInput ->
-            handleInput model instanceId newInput
+        Input instanceLocator newInput ->
+            handleInput model instanceLocator newInput
 
-        Send instanceId ->
-            handleSend model instanceId
+        Send instanceLocator ->
+            handleSend model instanceLocator
 
-        KeyDown instanceId key ->
-            handleKeyDown model instanceId key
+        KeyDown instanceLocator key ->
+            handleKeyDown model instanceLocator key
 
         NewMessage message ->
             handleNewMessage model message
 
 
-handleInput : Model -> InstanceId -> String -> ( Model, Cmd Msg )
-handleInput model instanceId newInput =
+updateInstanceOfExperiment : Model -> InstanceLocator -> Experiments
+updateInstanceOfExperiment model instanceLocator updateFunction =
     let
-        { instances } =
+        { experiments } =
             model
 
-        findAndUpdateInstance instance =
-            if instance.id == instanceId then
-                { instance | input = newInput }
-            else
-                instance
+        ( experimentId, instanceId ) =
+            instanceLocator
 
-        updatedInstances =
-            List.map findAndUpdateInstance instances
+        getExperiment experiments =
+            Dict.get experimentId experiments
+
+        updateInstance experiment =
+            let
+                { instances } =
+                    experiment
+
+                updatedInstances =
+                    Dict.update instanceId (Maybe.map updateFunction) instances
+            in
+                ( experiment, updatedInstances )
+
+        updateExperiment ( experiments, updatedInstances ) =
+            let
+                updateInstancesOfExperiment experiment =
+                    { experiment | instances = updatedInstances }
+
+                updateInstances =
+                    Maybe.map updateInstancesOfExperiment
+            in
+                Dict.update experimentId updateInstances experiments
+    in
+        experiments
+            |> getExperiment
+            |> andThen updateInstance
+            |> andThen updateExperiment
+
+
+
+-- |>
+
+
+handleInput : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
+handleInput model instanceLocator newInput =
+    let
+        updateInstanceInput instance =
+            { instance | input = newInput }
+
+        updatedExperiments =
+            updateInstanceOfExperiment model instanceLocator updateInstanceInput
 
         updatedModel =
-            { model | instances = updatedInstances }
+            { model | experiments = updatedExperiments }
     in
         ( updatedModel, Cmd.none )
+
+
+resetInputOfInstance : InstanceLocator -> Instances -> Instances
+resetInputOfInstance instanceLocator instances =
+    let
+        findAndUpdateInstance instance =
+            if instance.id == instanceId then
+                { instance | input = "" }
+            else
+                instance
+    in
+        List.map findAndUpdateInstance instances
+
+
+selectInstance : InstanceLocator -> Instances -> Instance
+selectInstance instanceLocator instances =
+    let
+        predicate instance =
+            instance.id == instanceId
+    in
+        List.filter predicate instances
+            |> List.head
 
 
 handleSend : Model -> InstanceId -> ( Model, Cmd Msg )
@@ -49,21 +109,11 @@ handleSend model instanceId =
         { instances, config } =
             model
 
-        predicate instance =
-            instance.id == instanceId
+        updatedInstances =
+            resetInputOfInstance instanceId instances
 
         instanceWithId =
-            List.filter (\instance -> predicate instance) instances
-                |> List.head
-
-        findAndUpdateInstance instance =
-            if predicate instance then
-                { instance | input = "" }
-            else
-                instance
-
-        updatedInstances =
-            List.map findAndUpdateInstance instances
+            selectInstance instanceId instances
 
         updatedModel =
             { model | instances = updatedInstances }
@@ -72,11 +122,11 @@ handleSend model instanceId =
             case instanceWithId of
                 Just instance ->
                     let
-                        body =
-                            encodeToCommand instanceId instance.input
+                        payload =
+                            AddInputPayload instance.id instance.input
 
-                        -- _ =
-                        --     Debug.log "message" body
+                        body =
+                            Encoders.addInputCommand payload
                     in
                         WebSocket.send config.url body
 
@@ -107,9 +157,6 @@ handleNewMessage model message =
                     LogMessage payload ->
                         handleLogMessage model payload
 
-                    DataMessage payload ->
-                        handleDateMessage model payload
-
                     ReplyMessage payload ->
                         handleReplyMessage model payload
 
@@ -138,15 +185,6 @@ handleLogMessage model payload =
 
         updatedModel =
             { model | instances = updatedInstances }
-    in
-        ( updatedModel, Cmd.none )
-
-
-handleDateMessage : Model -> DataPayload -> ( Model, Cmd Msg )
-handleDateMessage model payload =
-    let
-        updatedModel =
-            model
     in
         ( updatedModel, Cmd.none )
 

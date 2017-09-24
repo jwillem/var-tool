@@ -1,9 +1,9 @@
 --
-name: Java RMI Chat
+name: RMI Chat
 lecturer: Sandro Leuchter
 class: VAR
-number-of-containers: 4
-start-params:
+number-of-instances: 4
+instances:
   - main-class: ChatServer
     arguments: ""
   - main-class: ChatClient

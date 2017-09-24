@@ -11,6 +11,7 @@
                  [ring/ring-json "0.4.0"]
                  [crypto-random "1.2.0"]
                  [org.clojure/data.json "0.2.6"]
+                 [org.clojure/core.match "0.3.0-alpha5"]
                  [http-kit "2.2.0"]]
   :main var-tool.server.handler
   :target-path "target/%s"
