@@ -35,7 +35,12 @@ viewExperiment experiment =
             experiment
 
         viewInstance instance =
-            viewInstanceOfExperiment experiment instance
+            viewInstanceOfExperiment instance experiment
+
+        instancesViews =
+            instances
+                |> Dict.toList
+                |> List.map viewInstance
     in
         div
             [ style
@@ -46,11 +51,11 @@ viewExperiment experiment =
                 -- , ( "flex-direction", "column" )
                 ]
             ]
-            (Dict.map viewInstance instances)
+            instancesViews
 
 
-viewInstanceOfExperiment : Instance -> Experiment -> Html Msg
-viewInstanceOfExperiment instance experiment =
+viewInstanceOfExperiment : ( String, Instance ) -> Experiment -> Html Msg
+viewInstanceOfExperiment ( _, instance ) experiment =
     let
         { numberOfInstances } =
             experiment
@@ -73,7 +78,7 @@ viewInput : Instance -> Experiment -> Html Msg
 viewInput instance experiment =
     let
         instanceLocator =
-            Builders.buildInstanceLocator experiment instance
+            ( experiment.name, toString (instance.id) )
     in
         div
             [ style

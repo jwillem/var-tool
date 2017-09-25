@@ -30,8 +30,9 @@ addInputCommand payload =
 
 
 addInputPayload : AddInputPayload -> Value
-addInputPayload { input, instanceId } =
+addInputPayload { input, experimentId, instanceId } =
     object
         [ ( "input", string input )
-        , ( "instanceId", int instanceId )
+        , ( "experimentId", string experimentId )
+        , ( "instanceId", string instanceId )
         ]

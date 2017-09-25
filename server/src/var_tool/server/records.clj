@@ -1,11 +1,10 @@
 (ns var-tool.server.records)
 
 (defrecord Experiment [name lecturer class numberOfInstances instances])
-(defrecord Instance [mainClass arguments])
+(defrecord Instance [id mainClass arguments portsOut portsIn])
 (defrecord Message [kind subkind payload])
-(defrecord LogPayload [log instanceId])
+(defrecord LogPayload [log experimentId instanceId])
 (defrecord ReplyPayload [to success data])
-(defrecord RequestExperimentsData [experiments])
 (defrecord Command [kind subkind payload])
 (defrecord RequestExperimentsPayload [])
 (defrecord StartContainerPayload [instanceId])
@@ -19,8 +18,8 @@
 
 (defn build-instance
   "Instance-Constructor"
-  [mainClass arguments]
-  (Instance. mainClass arguments))
+  [id mainClass arguments portsOut portsIn]
+  (Instance. id mainClass arguments portsOut portsIn))
 
 (defn build-message
   "Message-Constructor"
@@ -29,18 +28,14 @@
 
 (defn build-log-payload
   ""
-  [log instanceId]
-  (LogPayload. log instanceId))
+  [log experimentId instanceId]
+  (LogPayload. log experimentId instanceId))
 
 (defn build-reply-payload
   ""
   [to success data]
   (ReplyPayload. to success data))
 
-(defn build-request-experiments-data
-  ""
-  [experiments]
-  (RequestExperimentsData. experiments))
 (defn build-command
   ""
   [subkind payload]

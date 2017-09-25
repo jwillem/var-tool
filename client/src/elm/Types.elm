@@ -19,25 +19,35 @@ type alias Experiment =
 
 
 type alias Experiments =
-    Dict Int Experiment
+    Dict String Experiment
 
 
 type alias InstanceLocator =
-    ( String, Int )
+    ( String, String )
 
 
 type alias Instance =
     { id : Int
     , mainClass : String
     , arguments : String
-    , status : String
+    , portsIn : List Int
+    , portsOut : List Int
+    , status : InstanceStatus
     , input : String
     , logs : List Log
     }
 
 
+type InstanceStatus
+    = Empty
+    | Uploading
+    | Settings
+    | Waiting
+    | Running
+
+
 type alias Instances =
-    Dict Int Instance
+    Dict String Instance
 
 
 type alias Log =
@@ -70,14 +80,14 @@ type Msg
 
 type alias AddInputPayload =
     { experimentId : String
-    , instanceId : Int
+    , instanceId : String
     , input : String
     }
 
 
 type alias StartInstancePayload =
     { experimentId : String
-    , instanceId : Int
+    , instanceId : String
     }
 
 
@@ -93,17 +103,22 @@ type alias MessageBase =
 
 type Message
     = LogMessage LogPayload
-    | ReplyMessage ReplyPayload
+    | DataMessage (ReplyPayload Experiments)
 
 
 type alias LogPayload =
     { experimentId : String
-    , instanceId : Int
+    , instanceId : String
     , log : Log
     }
 
 
-type alias ReplyPayload =
+type alias ReplyPayloadBase =
     { to : String
     , success : Bool
+    }
+
+
+type alias ReplyPayload a =
+    { data : a
     }

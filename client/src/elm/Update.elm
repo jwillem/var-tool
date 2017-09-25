@@ -24,7 +24,11 @@ update msg model =
             handleNewMessage model message
 
 
-updateInstanceOfExperiment : Model -> InstanceLocator -> Experiments
+updateInstanceOfExperiment :
+    Model
+    -> InstanceLocator
+    -> (Instance -> Instance)
+    -> Maybe Experiments
 updateInstanceOfExperiment model instanceLocator updateFunction =
     let
         { experiments } =
@@ -33,37 +37,23 @@ updateInstanceOfExperiment model instanceLocator updateFunction =
         ( experimentId, instanceId ) =
             instanceLocator
 
-        getExperiment experiments =
-            Dict.get experimentId experiments
+        updateInstance { instances } =
+            Dict.update instanceId (Maybe.map updateFunction) instances
+                |> Just
 
-        updateInstance experiment =
-            let
-                { instances } =
-                    experiment
+        updateInstancesOfExperiment updatedInstances experiment =
+            { experiment | instances = updatedInstances }
 
-                updatedInstances =
-                    Dict.update instanceId (Maybe.map updateFunction) instances
-            in
-                ( experiment, updatedInstances )
-
-        updateExperiment ( experiments, updatedInstances ) =
-            let
-                updateInstancesOfExperiment experiment =
-                    { experiment | instances = updatedInstances }
-
-                updateInstances =
-                    Maybe.map updateInstancesOfExperiment
-            in
-                Dict.update experimentId updateInstances experiments
+        updateExperiment updatedInstances =
+            Dict.update
+                experimentId
+                (Maybe.map (updateInstancesOfExperiment updatedInstances))
+                experiments
+                |> Just
     in
-        experiments
-            |> getExperiment
+        Dict.get experimentId experiments
             |> andThen updateInstance
             |> andThen updateExperiment
-
-
-
--- |>
 
 
 handleInput : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
@@ -76,54 +66,65 @@ handleInput model instanceLocator newInput =
             updateInstanceOfExperiment model instanceLocator updateInstanceInput
 
         updatedModel =
-            { model | experiments = updatedExperiments }
+            case updatedExperiments of
+                Just updatedExperiments ->
+                    { model | experiments = updatedExperiments }
+
+                Nothing ->
+                    model
     in
         ( updatedModel, Cmd.none )
 
 
-resetInputOfInstance : InstanceLocator -> Instances -> Instances
-resetInputOfInstance instanceLocator instances =
+selectInstance : Model -> InstanceLocator -> Maybe Instance
+selectInstance model instanceLocator =
     let
-        findAndUpdateInstance instance =
-            if instance.id == instanceId then
-                { instance | input = "" }
-            else
-                instance
-    in
-        List.map findAndUpdateInstance instances
-
-
-selectInstance : InstanceLocator -> Instances -> Instance
-selectInstance instanceLocator instances =
-    let
-        predicate instance =
-            instance.id == instanceId
-    in
-        List.filter predicate instances
-            |> List.head
-
-
-handleSend : Model -> InstanceId -> ( Model, Cmd Msg )
-handleSend model instanceId =
-    let
-        { instances, config } =
+        { experiments } =
             model
 
-        updatedInstances =
-            resetInputOfInstance instanceId instances
+        ( experimentId, instanceId ) =
+            instanceLocator
 
-        instanceWithId =
-            selectInstance instanceId instances
+        getInstance experiment =
+            Dict.get instanceId experiment.instances
+    in
+        experiments
+            |> Dict.get experimentId
+            |> andThen getInstance
+
+
+handleSend : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleSend model instanceLocator =
+    let
+        { config } =
+            model
+
+        ( experimentId, instanceId ) =
+            instanceLocator
+
+        instance =
+            selectInstance model instanceLocator
+
+        updateInstanceInput instance =
+            { instance | input = "" }
+
+        updatedExperiments =
+            updateInstanceOfExperiment model instanceLocator updateInstanceInput
 
         updatedModel =
-            { model | instances = updatedInstances }
+            case updatedExperiments of
+                Just updatedExperiments ->
+                    { model | experiments = updatedExperiments }
+
+                Nothing ->
+                    model
 
         command =
-            case instanceWithId of
+            case instance of
                 Just instance ->
                     let
                         payload =
-                            AddInputPayload instance.id instance.input
+                            AddInputPayload experimentId instanceId instance.input
 
                         body =
                             Encoders.addInputCommand payload
@@ -136,11 +137,11 @@ handleSend model instanceId =
         ( updatedModel, command )
 
 
-handleKeyDown : Model -> InstanceId -> Keycode -> ( Model, Cmd Msg )
-handleKeyDown model instanceId keycode =
+handleKeyDown : Model -> InstanceLocator -> Keycode -> ( Model, Cmd Msg )
+handleKeyDown model instanceLocator keycode =
     -- onEnter
     if keycode == 13 then
-        handleSend model instanceId
+        handleSend model instanceLocator
     else
         ( model, Cmd.none )
 
@@ -157,8 +158,8 @@ handleNewMessage model message =
                     LogMessage payload ->
                         handleLogMessage model payload
 
-                    ReplyMessage payload ->
-                        handleReplyMessage model payload
+                    DataMessage payload ->
+                        handleDataMessage model payload
 
             Err error ->
                 let
@@ -171,28 +172,36 @@ handleNewMessage model message =
 handleLogMessage : Model -> LogPayload -> ( Model, Cmd Msg )
 handleLogMessage model payload =
     let
-        { instances } =
-            model
+        { experimentId, instanceId, log } =
+            payload
 
-        findAndUpdateInstance instance =
-            if instance.id == payload.instanceId then
-                { instance | logs = payload.log :: instance.logs }
-            else
-                instance
+        instanceLocator =
+            ( experimentId, instanceId )
 
-        updatedInstances =
-            List.map findAndUpdateInstance instances
+        updateInstanceInput instance =
+            { instance | logs = log :: instance.logs }
+
+        updatedExperiments =
+            updateInstanceOfExperiment model instanceLocator updateInstanceInput
 
         updatedModel =
-            { model | instances = updatedInstances }
+            case updatedExperiments of
+                Just updatedExperiments ->
+                    { model | experiments = updatedExperiments }
+
+                Nothing ->
+                    model
     in
         ( updatedModel, Cmd.none )
 
 
-handleReplyMessage : Model -> ReplyPayload -> ( Model, Cmd Msg )
-handleReplyMessage model payload =
+handleDataMessage : Model -> ReplyPayload Experiments -> ( Model, Cmd Msg )
+handleDataMessage model payload =
     let
         updatedModel =
-            model
+            { model | experiments = payload.data }
+
+        -- _ =
+        --     Debug.log "Experiments" updatedModel
     in
         ( updatedModel, Cmd.none )

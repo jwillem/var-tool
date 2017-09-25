@@ -44,19 +44,18 @@
 (defn handle-request-experiments
   ""
   [channel]
-  (let [experiments [(records/build-experiment 
-                       "RMI Chat"
-                       "Sandro Leuchter"
-                       "VAR"
-                       4
-                       [(records/build-instance "ChatServer" ""),
-                        (records/build-instance "ChatClient" "Anton"),
-                        (records/build-instance "ChatClient" "Berta"),
-                        (records/build-instance "ChatClient" "Chris")])]
-        data (records/build-request-experiments-data experiments)
+  (let [experiments {"RMI Chat" (records/build-experiment 
+                                  "RMI Chat"
+                                  "Sandro Leuchter"
+                                  "VAR"
+                                  4
+                                  {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
+                                   :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
+                                   :3 (records/build-instance 3 "ChatClient" "Berta" [1234] [4321]),
+                                   :4 (records/build-instance 4 "ChatClient" "Chris" [1234] [4321])})}
         payload (records/build-reply-payload "request-experiments"
                                              true
-                                             data)
+                                             experiments)
         message (buildMessage "reply" payload)
         reply (json/write-str message)]
     (send! channel reply)))
@@ -64,11 +63,13 @@
 (defn handle-add-input
   ""
   [channel payload session-token]
-  (let [{:keys [input instanceId]} payload
-        newPayload {:log (str "\"" input "\" from Client!")
-                    :instanceId instanceId}
-        message (buildMessage "log" newPayload)
-        reply (json/write-str message)]
+  (let [{:keys [input experimentId instanceId]} payload
+        log (str "\"" input "\" from Client!")
+        newPayload (records/build-log-payload log experimentId instanceId)
+        message (records/build-message "log" newPayload)
+        reply (json/write-str message)
+        ;; _ (println "Reply:" reply)
+        ]
     (send! channel reply)))
 
 (defn handle-command-error
@@ -123,8 +124,8 @@
 
 (defn -main [& args]
   (let [port 8080;;(System/getenv "PORT")
-        in-dev? true ;;(System/getenv "IS_DEV")
-        handler (if in-dev?
+        dev? true ;;(System/getenv "IS_DEV")
+        handler (if dev?
                   (reload/wrap-reload (http-handler #'routes))
                   (http-handler routes))]
     (println (str "Starting Server on port: " port))
