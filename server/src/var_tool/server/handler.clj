@@ -22,24 +22,14 @@
   ""
   [request]
   (println request)
-  ;; TODO set cookie via header
-  (response {:success true :type "message"}))
+  ;; implicitly sets cookie via http-header of response
+  (response {:success true}))
 
 
 (defn upload-submission-for-instance
   ""
   [request]
   (println "Uploading Submission"))
-
-(defn delete-submission-for-instance
-  ""
-  [request]
-  (println "Deleting Submission"))
-
-(defn buildMessage
-  ""
-  [subkind payload]
-  {:kind "message" :subkind subkind :payload payload})
 
 (defn handle-request-experiments
   ""
@@ -118,8 +108,7 @@
   (GET "/ws" [] websocket-handler)
   (GET "/hello" [] init-session)
   (context "submission/:instance-id" [instance-id]
-           (POST / [] upload-submission-for-instance)
-           (DELETE / [] delete-submission-for-instance))
+           (POST / [] upload-submission-for-instance))
   (route/not-found (not-found {:success false})))
 
 (defn -main [& args]

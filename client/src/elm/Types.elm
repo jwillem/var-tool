@@ -1,6 +1,7 @@
 module Types exposing (..)
 
 import Dict exposing (..)
+import Http
 
 
 type alias Model =
@@ -55,7 +56,9 @@ type alias Log =
 
 
 type alias Config =
-    { url : String }
+    { wsUrl : String
+    , cookieUrl : String
+    }
 
 
 type alias Keycode =
@@ -67,6 +70,7 @@ type Msg
     | Send InstanceLocator
     | KeyDown InstanceLocator Keycode
     | NewMessage String
+    | InitSession (Result Http.Error String)
 
 
 

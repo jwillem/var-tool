@@ -1,8 +1,10 @@
 module Model exposing (init)
 
 import WebSocket
+import Http
 import Types exposing (..)
 import Encoders
+import Json.Decode exposing (string)
 import Dict
 
 
@@ -10,17 +12,25 @@ init : ( Model, Cmd Msg )
 init =
     let
         config =
-            { url = "ws://localhost:8080/ws" }
+            { wsUrl = "ws://localhost:8080/ws"
+            , cookieUrl = "http://localhost:8080/hello"
+            }
 
         model =
             { experiments = Dict.empty
             , config = config
             }
 
-        body =
-            Encoders.requestExperimentsCommand
+        initSession =
+            Http.get config.cookieUrl string
+                |> Http.send InitSession
+
+        initWebsocket =
+            WebSocket.send
+                config.wsUrl
+                Encoders.requestExperimentsCommand
 
         commands =
-            WebSocket.send config.url body
+            Cmd.batch [ initSession, initWebsocket ]
     in
         ( model, commands )

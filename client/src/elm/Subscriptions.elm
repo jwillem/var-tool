@@ -6,4 +6,4 @@ import Types exposing (..)
 
 subscriptions : Model -> Sub Msg
 subscriptions { config } =
-    WebSocket.listen config.url NewMessage
+    WebSocket.listen config.wsUrl NewMessage

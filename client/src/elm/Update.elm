@@ -11,6 +11,20 @@ import Decoders exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        InitSession (Ok _) ->
+            let
+                _ =
+                    Debug.log "Session initiated."
+            in
+                (!) model []
+
+        InitSession (Err _) ->
+            let
+                _ =
+                    Debug.log "Session init failed!"
+            in
+                (!) model []
+
         Input instanceLocator newInput ->
             handleInput model instanceLocator newInput
 
@@ -129,7 +143,7 @@ handleSend model instanceLocator =
                         body =
                             Encoders.addInputCommand payload
                     in
-                        WebSocket.send config.url body
+                        WebSocket.send config.wsUrl body
 
                 Nothing ->
                     Cmd.none
