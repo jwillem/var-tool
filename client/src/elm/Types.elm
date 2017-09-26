@@ -11,7 +11,8 @@ type alias Model =
 
 
 type alias Experiment =
-    { name : String
+    { id : String
+    , name : String
     , lecturer : String
     , class : String
     , numberOfInstances : Int

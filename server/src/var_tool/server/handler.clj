@@ -14,7 +14,8 @@
             [clojure.core.match :refer [match]]
             [org.httpkit.server :refer
              [run-server with-channel send! on-receive on-close]]
-            ;;             [clojure.java.io :as io]
+            [clojure.java.io :as io]
+            [clojure.string :as string]
             [var-tool.server.records :as records]
             ))
 
@@ -34,7 +35,8 @@
 (defn handle-request-experiments
   ""
   [channel]
-  (let [experiments {"RMI Chat" (records/build-experiment 
+  (let [experiments {"rmichat" (records/build-experiment
+                                  "rmichat"
                                   "RMI Chat"
                                   "Sandro Leuchter"
                                   "VAR"
@@ -46,9 +48,14 @@
         payload (records/build-reply-payload "request-experiments"
                                              true
                                              experiments)
-        message (buildMessage "reply" payload)
+        message (records/build-message "reply" payload)
         reply (json/write-str message)]
     (send! channel reply)))
+
+(defn build-file-path
+  ""
+  [col]
+  (string/join "/" col))
 
 (defn handle-add-input
   ""
@@ -59,7 +66,12 @@
         message (records/build-message "log" newPayload)
         reply (json/write-str message)
         ;; _ (println "Reply:" reply)
+        submissions-path "data/submissions"
+        file-path (build-file-path
+                    [submissions-path session-token experimentId instanceId "stdin"])
         ]
+    (io/make-parents file-path)
+    (spit file-path input)
     (send! channel reply)))
 
 (defn handle-command-error

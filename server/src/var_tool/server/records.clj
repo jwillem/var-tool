@@ -1,6 +1,6 @@
 (ns var-tool.server.records)
 
-(defrecord Experiment [name lecturer class numberOfInstances instances])
+(defrecord Experiment [id name lecturer class numberOfInstances instances])
 (defrecord Instance [id mainClass arguments portsOut portsIn])
 (defrecord Message [kind subkind payload])
 (defrecord LogPayload [log experimentId instanceId])
@@ -13,8 +13,8 @@
 
 (defn build-experiment
   "Experiment-Constructor"
-  [name lecturer class numberOfInstances instances]
-  (Experiment. name lecturer class numberOfInstances instances))
+  [id name lecturer class numberOfInstances instances]
+  (Experiment. id name lecturer class numberOfInstances instances))
 
 (defn build-instance
   "Instance-Constructor"

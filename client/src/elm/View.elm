@@ -15,7 +15,7 @@ view model =
             model
 
         experiment =
-            Dict.get "RMI Chat" experiments
+            Dict.get "rmichat" experiments
 
         layout =
             case experiment of
@@ -78,7 +78,7 @@ viewInput : Instance -> Experiment -> Html Msg
 viewInput instance experiment =
     let
         instanceLocator =
-            ( experiment.name, toString (instance.id) )
+            ( experiment.id, toString (instance.id) )
     in
         div
             [ style

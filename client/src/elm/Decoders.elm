@@ -81,7 +81,8 @@ dataMessageDecoder payload =
 
 experimentDecoder : Decoder Experiment
 experimentDecoder =
-    map5 Experiment
+    map6 Experiment
+        (field "id" string)
         (field "name" string)
         (field "lecturer" string)
         (field "class" string)
