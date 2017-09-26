@@ -1,11 +1,25 @@
 module Model exposing (init)
 
 import WebSocket
-import Http
+import Http exposing (Request)
 import Types exposing (..)
 import Encoders
-import Json.Decode exposing (string)
+import Decoders
+import Json.Decode exposing (Decoder)
 import Dict
+
+
+getCookie : String -> Decoder a -> Request a
+getCookie url decoder =
+    Http.request
+        { method = "GET"
+        , headers = []
+        , url = url
+        , body = Http.emptyBody
+        , expect = Http.expectJson decoder
+        , timeout = Nothing
+        , withCredentials = True -- is needed to set cookie with set-cookie-header
+        }
 
 
 init : ( Model, Cmd Msg )
@@ -22,15 +36,10 @@ init =
             }
 
         initSession =
-            Http.get config.cookieUrl string
+            getCookie config.cookieUrl Decoders.successDecoder
                 |> Http.send InitSession
 
-        initWebsocket =
-            WebSocket.send
-                config.wsUrl
-                Encoders.requestExperimentsCommand
-
         commands =
-            Cmd.batch [ initSession, initWebsocket ]
+            Cmd.batch [ initSession ]
     in
         ( model, commands )

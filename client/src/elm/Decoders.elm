@@ -101,3 +101,9 @@ instanceDecoder =
         (succeed Empty)
         (succeed "")
         (succeed [])
+
+
+successDecoder : Decoder Success
+successDecoder =
+    map Success
+        (field "success" bool)

@@ -71,7 +71,7 @@ type Msg
     | Send InstanceLocator
     | KeyDown InstanceLocator Keycode
     | NewMessage String
-    | InitSession (Result Http.Error String)
+    | InitSession (Result Http.Error Success)
 
 
 
@@ -127,3 +127,7 @@ type alias ReplyPayloadBase =
 type alias ReplyPayload a =
     { data : a
     }
+
+
+type alias Success =
+    { success : Bool }

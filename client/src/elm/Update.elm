@@ -11,17 +11,25 @@ import Decoders exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        InitSession (Ok _) ->
+        InitSession (Ok response) ->
             let
-                _ =
-                    Debug.log "Session initiated."
-            in
-                (!) model []
+                { config } =
+                    model
 
-        InitSession (Err _) ->
+                _ =
+                    Debug.log "Session initiated." response
+
+                initWebsocket =
+                    WebSocket.send
+                        config.wsUrl
+                        Encoders.requestExperimentsCommand
+            in
+                (!) model [ initWebsocket ]
+
+        InitSession (Err error) ->
             let
                 _ =
-                    Debug.log "Session init failed!"
+                    Debug.log "Session init failed!" error
             in
                 (!) model []
 

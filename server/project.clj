@@ -9,6 +9,7 @@
                  [ring/ring-core "1.6.2"]
                  [ring/ring-defaults "0.2.1"]
                  [ring/ring-json "0.4.0"]
+                 [jumblerg/ring.middleware.cors "1.0.1"]
                  [crypto-random "1.2.0"]
                  [org.clojure/data.json "0.2.6"]
                  [org.clojure/core.match "0.3.0-alpha5"]
