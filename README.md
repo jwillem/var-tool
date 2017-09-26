@@ -2,8 +2,9 @@
 ## Install
 
 ## Enpoints
-- Client: `http://localhost:80/public` or in dev: `http://localhost:8080`
-- Kafka-Websocket: `ws://localhost:7080/v2/broker/?topics=${topic}`
+- Client: `http://localhost:80/public` or in dev: `http://localhost:80`
+- Websocket: `ws://localhost:8080/ws`
+- init Session on Server: `http://localhost:8080/hello`
 
 ## Build Jars on command-line
 - compile: `mkdir build && javac -d build src/var/rmi/chat/*.java`
