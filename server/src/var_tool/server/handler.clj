@@ -86,7 +86,7 @@
         ;; TODO remove
         _ (io/make-parents file-path)
         ]
-    (spit file-path input)
+    (spit file-path (str input "\n") :append true)
     (send! channel reply)))
 
 (defn handle-command-error

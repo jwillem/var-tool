@@ -1,0 +1,7 @@
+COMPOSE_PROJECT_NAME='vartool_rmichat_xyz'
+JAR_FILE_1='RmiChat.jar'
+MAIN_CLASS_1='var.rmi.chat.ChatServer'
+ARGUMENTS_1=''
+JAR_FILE_2='RmiChat.jar'
+MAIN_CLASS_2='var.rmi.chat.ChatClient'
+ARGUMENTS_2='Anna'
