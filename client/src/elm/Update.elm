@@ -3,6 +3,14 @@ module Update exposing (..)
 import WebSocket
 import Dict exposing (..)
 import Maybe exposing (..)
+import Material
+import Navigation
+import Http
+
+
+--
+
+import Route exposing (Route)
 import Types exposing (..)
 import Encoders exposing (..)
 import Decoders exposing (..)
@@ -11,7 +19,70 @@ import Decoders exposing (..)
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        InitSession (Ok response) ->
+        InitSession result ->
+            handleInitSession model result
+
+        Input instanceLocator newInput ->
+            handleInput model instanceLocator newInput
+
+        Send instanceLocator ->
+            handleSend model instanceLocator
+
+        KeyDown instanceLocator key ->
+            handleKeyDown model instanceLocator key
+
+        Upload instanceLocator ->
+            handleUpload model instanceLocator
+
+        ShowSettings instanceLocator ->
+            handleShowSettings model instanceLocator
+
+        Wait instanceLocator ->
+            handleWait model instanceLocator
+
+        Start instanceLocator ->
+            handleStart model instanceLocator
+
+        Clear instanceLocator ->
+            handleClear model instanceLocator
+
+        Stop instanceLocator ->
+            handleStop model instanceLocator
+
+        NewMessage message ->
+            handleNewMessage model message
+
+        Mdl msg_ ->
+            Material.update Mdl msg_ model
+
+        NavigateTo location ->
+            location
+                |> Route.locFor
+                |> urlUpdate model
+
+        NewUrl url ->
+            model ! [ Navigation.newUrl url ]
+
+        Toggle index ->
+            let
+                toggles =
+                    case (Dict.get index model.toggles) of
+                        Just v ->
+                            Dict.insert index (not v) model.toggles
+
+                        Nothing ->
+                            Dict.insert index True model.toggles
+            in
+                { model | toggles = toggles } ! []
+
+        Raise k ->
+            { model | raised = k } ! []
+
+
+handleInitSession : Model -> Result Http.Error Success -> ( Model, Cmd Msg )
+handleInitSession model response =
+    case response of
+        Ok response ->
             let
                 { config } =
                     model
@@ -24,26 +95,25 @@ update msg model =
                         config.wsUrl
                         Encoders.requestExperimentsCommand
             in
-                (!) model [ initWebsocket ]
+                model ! [ initWebsocket ]
 
-        InitSession (Err error) ->
+        Err error ->
             let
                 _ =
                     Debug.log "Session init failed!" error
             in
-                (!) model []
+                model ! []
 
-        Input instanceLocator newInput ->
-            handleInput model instanceLocator newInput
 
-        Send instanceLocator ->
-            handleSend model instanceLocator
-
-        KeyDown instanceLocator key ->
-            handleKeyDown model instanceLocator key
-
-        NewMessage message ->
-            handleNewMessage model message
+urlUpdate : Model -> Maybe Route -> ( Model, Cmd Msg )
+urlUpdate model route =
+    let
+        newModel =
+            { model | history = route :: model.history }
+    in
+        case route of
+            _ ->
+                newModel ! []
 
 
 updateInstanceOfExperiment :
@@ -78,14 +148,11 @@ updateInstanceOfExperiment model instanceLocator updateFunction =
             |> andThen updateExperiment
 
 
-handleInput : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
-handleInput model instanceLocator newInput =
+updateInstance : Model -> InstanceLocator -> (Instance -> Instance) -> ( Model, Cmd Msg )
+updateInstance model instanceLocator updateFunction =
     let
-        updateInstanceInput instance =
-            { instance | input = newInput }
-
         updatedExperiments =
-            updateInstanceOfExperiment model instanceLocator updateInstanceInput
+            updateInstanceOfExperiment model instanceLocator updateFunction
 
         updatedModel =
             case updatedExperiments of
@@ -96,6 +163,69 @@ handleInput model instanceLocator newInput =
                     model
     in
         ( updatedModel, Cmd.none )
+
+
+handleShowSettings : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleShowSettings model instanceLocator =
+    let
+        updateInstanceStatus instance =
+            { instance | status = Settings }
+    in
+        updateInstance model instanceLocator updateInstanceStatus
+
+
+handleUpload : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleUpload model instanceLocator =
+    let
+        updateInstanceStatus instance =
+            { instance | status = Uploading }
+    in
+        updateInstance model instanceLocator updateInstanceStatus
+
+
+handleWait : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleWait model instanceLocator =
+    let
+        updateInstanceStatus instance =
+            { instance | status = Waiting }
+    in
+        updateInstance model instanceLocator updateInstanceStatus
+
+
+handleStart : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleStart model instanceLocator =
+    let
+        updateInstanceStatus instance =
+            { instance | status = Running }
+    in
+        updateInstance model instanceLocator updateInstanceStatus
+
+
+handleClear : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleClear model instanceLocator =
+    let
+        updateInstanceStatus instance =
+            { instance | status = Empty }
+    in
+        updateInstance model instanceLocator updateInstanceStatus
+
+
+handleStop : Model -> InstanceLocator -> ( Model, Cmd Msg )
+handleStop model instanceLocator =
+    let
+        updateInstanceStatus instance =
+            { instance | status = Settings, logs = [] }
+    in
+        updateInstance model instanceLocator updateInstanceStatus
+
+
+handleInput : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
+handleInput model instanceLocator newInput =
+    let
+        updateInstanceInput instance =
+            { instance | input = newInput }
+    in
+        updateInstance model instanceLocator updateInstanceInput
 
 
 selectInstance : Model -> InstanceLocator -> Maybe Instance

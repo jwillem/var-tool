@@ -2,11 +2,18 @@ module Model exposing (init)
 
 import WebSocket
 import Http exposing (Request)
+import Dict
+import Json.Decode exposing (Decoder)
+import Material
+import Navigation
+
+
+--
+
 import Types exposing (..)
+import Route exposing (Route)
 import Encoders
 import Decoders
-import Json.Decode exposing (Decoder)
-import Dict
 
 
 getCookie : String -> Decoder a -> Request a
@@ -22,8 +29,8 @@ getCookie url decoder =
         }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Navigation.Location -> ( Model, Cmd Msg )
+init location =
     let
         config =
             { wsUrl = "ws://localhost:8080/ws"
@@ -33,6 +40,10 @@ init =
         model =
             { experiments = Dict.empty
             , config = config
+            , mdl = Material.model
+            , history = location |> Route.locFor |> Route.init
+            , toggles = Dict.empty
+            , raised = -1
             }
 
         initSession =
@@ -40,6 +51,6 @@ init =
                 |> Http.send InitSession
 
         commands =
-            Cmd.batch [ initSession ]
+            Cmd.batch [ initSession, Material.init Mdl ]
     in
         ( model, commands )

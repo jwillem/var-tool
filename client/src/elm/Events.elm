@@ -4,8 +4,9 @@ import Types exposing (..)
 import Json.Decode as Json
 import Html exposing (Attribute)
 import Html.Events exposing (on, keyCode)
+import Material.Options as Options
 
 
-onKeyDown : (Int -> msg) -> Attribute msg
+onKeyDown : (Int -> m) -> Options.Property c m
 onKeyDown tagger =
-    on "keydown" (Json.map tagger keyCode)
+    Options.on "keydown" (Json.map tagger keyCode)

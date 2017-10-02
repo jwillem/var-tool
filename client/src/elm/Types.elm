@@ -2,11 +2,41 @@ module Types exposing (..)
 
 import Dict exposing (..)
 import Http
+import Material
+import Navigation
+
+
+--
+
+import Route exposing (Route(..))
+
+
+type Msg
+    = Input InstanceLocator String
+    | Send InstanceLocator
+    | KeyDown InstanceLocator Keycode
+    | Upload InstanceLocator
+    | ShowSettings InstanceLocator
+    | Wait InstanceLocator
+    | Start InstanceLocator
+    | Clear InstanceLocator
+    | Stop InstanceLocator
+    | NewMessage String
+    | InitSession (Result Http.Error Success)
+    | Mdl (Material.Msg Msg)
+    | NavigateTo Navigation.Location
+    | NewUrl String
+    | Toggle (List Int)
+    | Raise Int
 
 
 type alias Model =
     { experiments : Experiments
     , config : Config
+    , mdl : Material.Model
+    , history : List (Maybe Route)
+    , toggles : Dict (List Int) Bool
+    , raised : Int
     }
 
 
@@ -28,6 +58,10 @@ type alias InstanceLocator =
     ( String, String )
 
 
+type alias ExperimentId =
+    String
+
+
 type alias Instance =
     { id : Int
     , mainClass : String
@@ -38,6 +72,10 @@ type alias Instance =
     , input : String
     , logs : List Log
     }
+
+
+type alias Keycode =
+    Int
 
 
 type InstanceStatus
@@ -60,18 +98,6 @@ type alias Config =
     { wsUrl : String
     , cookieUrl : String
     }
-
-
-type alias Keycode =
-    Int
-
-
-type Msg
-    = Input InstanceLocator String
-    | Send InstanceLocator
-    | KeyDown InstanceLocator Keycode
-    | NewMessage String
-    | InitSession (Result Http.Error Success)
 
 
 
