@@ -3,11 +3,12 @@
   (:require [ring.middleware.reload :as reload]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
-            [compojure.handler :refer [site]]
+            ;; [compojure.handler :refer [site]]
             [ring.util.response :refer [response not-found]]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
-            [ring.middleware.session :refer [wrap-session]]
+            ;; [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.cors :refer [wrap-cors]]
+            ;; [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [compojure.core :refer [defroutes GET POST DELETE context]]
             [crypto.random :as random]
             [ring.middleware.session.cookie :refer [cookie-store]]
@@ -53,58 +54,60 @@
     (io/copy tempfile file) 
     (response {:success true})))
 
+(def experiments 
+  {"rmichat" (records/build-experiment
+               "rmichat"
+               "RMI Chat"
+               "Sandro Leuchter"
+               "VAR"
+               4
+               {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
+                :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
+                :3 (records/build-instance 3 "ChatClient" "Berta" [1234] [4321]),
+                :4 (records/build-instance 4 "ChatClient" "Chris" [1234] [4321])})
+   "two" (records/build-experiment
+           "two"
+           "Experiment 2"
+           "Foo Bar"
+           "Test"
+           2
+           {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
+            :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
+            })
+   "three" (records/build-experiment
+             "three"
+             "Experiment 3"
+             "Foo Bar"
+             "Test"
+             3
+             {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
+              :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
+              :3 (records/build-instance 3 "ChatClient" "Anton" [1234] [4321]),
+              })
+   "one" (records/build-experiment
+           "one"
+           "Experiment 1"
+           "Foo Bar"
+           "Test"
+           1
+           {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
+            })
+   "five" (records/build-experiment
+            "five"
+            "Experiment 5"
+            "Foo Bar"
+            "Test"
+            5
+            {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
+             :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
+             :3 (records/build-instance 3 "ChatClient" "Berta" [1234] [4321]),
+             :4 (records/build-instance 4 "ChatClient" "Chris" [1234] [4321]),
+             :5 (records/build-instance 5 "ChatClient" "Chris" [1234] [4321])})})
+
 (defn handle-request-experiments
   ""
   [channel]
-  (let [experiments {"rmichat" (records/build-experiment
-                                 "rmichat"
-                                 "RMI Chat"
-                                 "Sandro Leuchter"
-                                 "VAR"
-                                 4
-                                 {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
-                                  :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
-                                  :3 (records/build-instance 3 "ChatClient" "Berta" [1234] [4321]),
-                                  :4 (records/build-instance 4 "ChatClient" "Chris" [1234] [4321])})
-                     "two" (records/build-experiment
-                                 "two"
-                                 "Experiment 2"
-                                 "Foo Bar"
-                                 "Test"
-                                 2
-                                 {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
-                                  :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
-                                  })
-                     "three" (records/build-experiment
-                                 "three"
-                                 "Experiment 3"
-                                 "Foo Bar"
-                                 "Test"
-                                 3
-                                 {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
-                                  :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
-                                  :3 (records/build-instance 3 "ChatClient" "Anton" [1234] [4321]),
-                                  })
-                     "one" (records/build-experiment
-                                 "one"
-                                 "Experiment 1"
-                                 "Foo Bar"
-                                 "Test"
-                                 1
-                                 {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
-                                  })
-                     "five" (records/build-experiment
-                                 "five"
-                                 "Experiment 5"
-                                 "Foo Bar"
-                                 "Test"
-                                 5
-                                 {:1 (records/build-instance 1 "ChatServer" "" [1234] [4321]),
-                                  :2 (records/build-instance 2 "ChatClient" "Anton" [1234] [4321]),
-                                  :3 (records/build-instance 3 "ChatClient" "Berta" [1234] [4321]),
-                                  :4 (records/build-instance 4 "ChatClient" "Chris" [1234] [4321]),
-                                  :5 (records/build-instance 5 "ChatClient" "Chris" [1234] [4321])})}
-        payload (records/build-reply-payload "request-experiments"
+  (let [payload (records/build-reply-payload "request-experiments"
                                              true
                                              experiments)
         message (records/build-message "reply" payload)
@@ -143,7 +146,7 @@
     (on-receive
       channel
       (fn [data]
-        (let [session-token (:session/key request)
+        (let [session-token (get-in request [:cookies "var-tool-session" :value])
               ;; TODO error if session-token empty
               ;; TODO return error on java.lang.Exception: JSON error
               command-keyword (json/read-str data :key-fn keyword)
@@ -158,20 +161,26 @@
                  ["command" "stop-instance"] (println "stop")
                  :else (handle-command-error channel)))))))
 
+
 (defn http-handler
   ""
   [handler]
   (let [token (random/bytes 16)
-        session {:store (cookie-store {:key token})
-                 ;; -- following two wont work yet:
-                 :cookie-attrs {:max-age 7200}
-                 :cookie-name "var-tool-session"}]
+        session {:flash false
+                 :store (cookie-store {:key token})
+                 :cookie-attrs {:max-age 7200 :http-only true, :same-site :strict}
+                 :cookie-name "var-tool-session"}
+        page (-> site-defaults
+                 (assoc :session session)
+                 ;; (dissoc :security)
+                 )
+        _ (println session)]
     (-> handler
         (wrap-json-body {:keywords? true})
         (wrap-json-response)
-        (wrap-defaults site-defaults)
         (wrap-cors #"http://localhost")
-        (wrap-session session))))
+        (wrap-defaults page)
+        )))
 
 (defroutes routes
   (GET "/ws" [] websocket-handler)
@@ -184,9 +193,10 @@
 (defn -main [& args]
   (let [port 8080;;(System/getenv "PORT")
         dev? true ;;(System/getenv "IS_DEV")
-        handler (if dev?
-                  (reload/wrap-reload (http-handler #'routes))
-                  (http-handler routes))]
+        ;; handler (if dev?
+        ;;           (reload/wrap-reload (http-handler #'routes))
+        ;;           (http-handler routes))]
+        handler (http-handler routes)]
     (println (str "Starting Server on port: " port))
     (run-server handler {:port port})))
 
