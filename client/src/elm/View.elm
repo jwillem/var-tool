@@ -27,13 +27,16 @@ view model =
         Layout.render Mdl
             model.mdl
             [ Layout.fixedHeader
-            , Layout.fixedDrawer
+
+            -- , Layout.fixedDrawer
             , Options.css "display" "flex !important"
             , Options.css "flex-direction" "row"
             , Options.css "align-items" "center"
             ]
             { header = [ viewHeader model ]
-            , drawer = [ viewDrawer model ]
+            , drawer = []
+
+            -- , drawer = [ viewDrawer model ]
             , tabs = ( [], [] )
             , main =
                 [ viewBody model
@@ -54,7 +57,7 @@ viewHeader model =
                     experiment.name
 
                 Nothing ->
-                    "Unknown"
+                    "Unbekannt"
 
         title =
             case model.history |> List.head |> Maybe.withDefault Nothing of
@@ -71,31 +74,44 @@ viewHeader model =
             [ Color.background <| Color.color Color.Grey Color.S100
             , Color.text <| Color.color Color.Grey Color.S900
             ]
-            [ Layout.spacer
+            [ Layout.navigation [ Options.css "padding" "12px" ]
+                (List.map (viewMenuItem model) menuItems)
+            , Layout.spacer
             , Layout.title
                 []
                 [ text title ]
             , Layout.spacer
-            , Layout.navigation []
-                []
+            , Layout.navigation [ Options.css "padding" "12px" ]
+                [ Button.render
+                    Mdl
+                    [ 99 ]
+                    model.mdl
+                    [ Button.icon
+                    , Button.ripple
+                    , Dialog.openOn "click"
+                    ]
+                    [ Icon.view "help"
+                        [ Color.text <| Color.color Color.BlueGrey Color.S500
+                        ]
+                    ]
+                ]
             ]
 
 
 type alias MenuItem =
-    { text : String
-    , iconName : String
+    { iconName : String
     , route : Maybe Route
     }
 
 
 menuItems : List MenuItem
 menuItems =
-    [ { text = "", iconName = "dashboard", route = Just Home }
+    [ { iconName = "apps", route = Just Home }
     ]
 
 
-viewDrawerMenuItem : Model -> MenuItem -> Html Msg
-viewDrawerMenuItem model menuItem =
+viewMenuItem : Model -> MenuItem -> Html Msg
+viewMenuItem model menuItem =
     let
         isCurrentLocation =
             case model.history of
@@ -113,41 +129,18 @@ viewDrawerMenuItem model menuItem =
                 _ ->
                     Options.nop
     in
-        Layout.link
-            [ onClickCmd
-            , when isCurrentLocation (Color.background <| Color.color Color.BlueGrey Color.S600)
-            , Options.css "color" "rgba(255, 255, 255, 0.56)"
-            , Options.css "font-weight" "500"
-            , Options.css "padding-left" "10px"
-            , Options.css "cursor" "pointer"
+        Button.render
+            Mdl
+            [ 90 ]
+            model.mdl
+            [ Button.icon
+            , Button.ripple
+            , onClickCmd
             ]
             [ Icon.view menuItem.iconName
                 [ Color.text <| Color.color Color.BlueGrey Color.S500
                 ]
-            , text menuItem.text
             ]
-
-
-viewDrawer : Model -> Html Msg
-viewDrawer model =
-    Layout.navigation
-        [ Color.background <| Color.color Color.BlueGrey Color.S800
-        , Color.text <| Color.color Color.BlueGrey Color.S50
-        , Options.css "flex-grow" "1"
-        ]
-    <|
-        (List.map (viewDrawerMenuItem model) menuItems)
-            ++ [ Layout.spacer
-               , Layout.link
-                    [ Dialog.openOn "click"
-                    , Options.css "padding-left" "10px"
-                    , Options.css "cursor" "pointer"
-                    ]
-                    [ Icon.view "help"
-                        [ Color.text <| Color.color Color.BlueGrey Color.S500
-                        ]
-                    ]
-               ]
 
 
 viewBody : Model -> Html Msg

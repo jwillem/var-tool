@@ -31,7 +31,7 @@ view model id =
                     viewExperiment model experiment
 
                 Nothing ->
-                    div [] [ text "Experiment not found." ]
+                    div [ style [ ( "padding", "16px" ) ] ] [ text "Experiment wurde nicht gefunden." ]
     in
         layout
 
@@ -69,9 +69,15 @@ viewInstanceOfExperiment model ( _, instance ) experiment =
         { numberOfInstances } =
             experiment
 
+        conditionalFactor =
+            if numberOfInstances % 2 == 0 then
+                numberOfInstances // 2
+            else
+                (numberOfInstances + 1)
+                    // 2
+
         factor =
-            numberOfInstances
-                - (numberOfInstances // 2)
+            conditionalFactor
                 |> toString
 
         body =
@@ -96,9 +102,9 @@ viewInstanceOfExperiment model ( _, instance ) experiment =
                 [ ( "display", "flex" )
                 , ( "margin", "6px" )
                 , ( "height"
-                  , "calc((100vh - 64px - ((" ++ factor ++ " + 2) * 6px)) / " ++ factor ++ ")"
+                  , "calc((100vh - 64px - (" ++ factor ++ " * 2 * 6px)) / " ++ factor ++ ")"
                   )
-                , ( "width", "calc((100vw - 50px - 24px) / 2)" )
+                , ( "width", "calc((100vw - 24px) / 2)" )
                 , ( "flex-direction", "column" )
                 , ( "justify-content", "space-between" )
                 ]
@@ -114,24 +120,37 @@ white =
 
 viewEmpty : Model -> Instance -> Experiment -> Html Msg
 viewEmpty model instance experiment =
-    Card.view
-        [ Options.css "flex" "1"
-        , Options.css "width" "100%"
-        , Options.center
-        , if model.raised == instance.id then
-            Elevation.e8
-          else
-            Elevation.e2
-        , Elevation.transition 250
-        , Options.onMouseEnter (Raise instance.id)
-        , Options.onMouseLeave (Raise -1)
-        , Options.onClick (Upload ( experiment.id, (toString instance.id) ))
-        , Options.css "cursor" "pointer"
-        ]
-        [ Card.title []
-            [ Card.head [] [ Icon.view "add" [ Color.text Color.accent, Icon.size36 ] ] ]
-        , Card.text [ Options.center, Options.css "margin-top" "-24px" ] [ text "Datei hochladen." ]
-        ]
+    let
+        fileuploadId =
+            "fileupload" ++ (toString instance.id)
+    in
+        Card.view
+            [ Options.css "flex" "1"
+            , Options.css "width" "100%"
+            , Options.center
+            , if model.raised == instance.id then
+                Elevation.e8
+              else
+                Elevation.e2
+            , Elevation.transition 250
+            , Options.onMouseEnter (Raise instance.id)
+            , Options.onMouseLeave (Raise -1)
+
+            -- , Options.onClick (Upload ( experiment.id, (toString instance.id) ))
+            ]
+            [ Card.title []
+                [ Card.head []
+                    [ label
+                        [ for fileuploadId
+                        , style [ ( "cursor", "pointer" ) ]
+                        ]
+                        [ Icon.view "add" [ Color.text Color.accent, Icon.size36 ]
+                        ]
+                    , input [ type_ "file", id fileuploadId, style [ ( "display", "none" ) ] ] []
+                    ]
+                ]
+            , Card.text [ Options.center, Options.css "margin-top" "-24px" ] [ text "Datei hochladen." ]
+            ]
 
 
 viewUploading : Model -> Instance -> Experiment -> Html Msg
@@ -249,7 +268,10 @@ viewRunning model instance experiment =
         , Options.onMouseEnter (Raise instance.id)
         , Options.onMouseLeave (Raise -1)
         ]
-        [ Card.title []
+        [ Card.title
+            [ Card.border
+            , Options.css "padding" "16px 16px 8px 16px"
+            ]
             [ Card.head
                 [ Options.css "display" "flex"
                 , Options.css "justify-content" "space-between"
@@ -273,7 +295,8 @@ viewRunning model instance experiment =
             , Options.css "display" "flex"
             , Options.css "flex-direction" "column-reverse"
             , Options.css "padding" "0"
-            , Options.css "width" "100%"
+            , Options.css "margin" "8px 8px 0 8px"
+            , Options.css "width" "calc(100% - 16px)"
             , Options.css "flex" "1"
             ]
             (List.map viewLog instance.logs)
@@ -310,7 +333,7 @@ viewLog log =
     div
         [ style
             [ ( "word-wrap", "break-word" )
-            , ( "padding", "2px 8px" )
+            , ( "padding", "2px 0" )
             ]
         ]
         [ text log ]
