@@ -1,7 +1,12 @@
 module Decoders exposing (..)
 
 import Json.Decode exposing (..)
+
+
+--
+
 import Types exposing (..)
+import Builders exposing (..)
 
 
 decodeMessage : String -> Result String Message
@@ -92,15 +97,12 @@ experimentDecoder =
 
 instanceDecoder : Decoder Instance
 instanceDecoder =
-    map8 Instance
+    map5 buildInstance
         (field "id" int)
         (field "mainClass" string)
         (field "arguments" string)
         (field "portsIn" (list int))
         (field "portsOut" (list int))
-        (succeed Empty)
-        (succeed "")
-        (succeed [])
 
 
 successDecoder : Decoder Success

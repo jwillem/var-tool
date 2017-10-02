@@ -35,6 +35,9 @@ init location =
         config =
             { wsUrl = "ws://localhost:8080/ws"
             , cookieUrl = "http://localhost:8080/hello"
+            , uploadUrl =
+                \( experimentId, instanceId ) ->
+                    ("http://localhost:8080/experiment/" ++ experimentId ++ "/instance/" ++ instanceId)
             }
 
         model =

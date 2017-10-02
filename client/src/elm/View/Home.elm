@@ -54,7 +54,6 @@ viewExperiment model key ( _, experiment ) =
             [ Card.view
                 [ Options.css "width" "100%"
                 , Options.css "padding-top" "75%"
-                , Options.css "border" "3px solid #29b6f6"
                 , Options.css "cursor" "pointer"
                 , if model.raised == key then
                     Elevation.e8

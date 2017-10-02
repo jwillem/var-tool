@@ -1,7 +1,5 @@
 module View.Experiment exposing (view)
 
-import Types exposing (..)
-import Events exposing (..)
 import Dict exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -14,6 +12,13 @@ import Material.Spinner as Loading
 import Material.Icon as Icon
 import Material.Button as Button
 import Material.Textfield as Textfield
+import FileReader exposing (..)
+
+
+--
+
+import Types exposing (..)
+import Events exposing (..)
 
 
 view : Model -> ExperimentId -> Html Msg
@@ -146,7 +151,15 @@ viewEmpty model instance experiment =
                         ]
                         [ Icon.view "add" [ Color.text Color.accent, Icon.size36 ]
                         ]
-                    , input [ type_ "file", id fileuploadId, style [ ( "display", "none" ) ] ] []
+                    , input
+                        [ type_ "file"
+                        , id fileuploadId
+                        , onFileChange (FilesSelect ( experiment.id, (toString instance.id) ))
+                        , style
+                            [ ( "display", "none" )
+                            ]
+                        ]
+                        []
                     ]
                 ]
             , Card.text [ Options.center, Options.css "margin-top" "-24px" ] [ text "Datei hochladen." ]

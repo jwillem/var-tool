@@ -6,6 +6,7 @@ import Maybe exposing (..)
 import Material
 import Navigation
 import Http
+import FileReader exposing (NativeFile)
 
 
 --
@@ -22,6 +23,9 @@ update msg model =
         InitSession result ->
             handleInitSession model result
 
+        FilePostResult instanceLocator result ->
+            handleFilePostResult model instanceLocator result
+
         Input instanceLocator newInput ->
             handleInput model instanceLocator newInput
 
@@ -32,13 +36,13 @@ update msg model =
             handleKeyDown model instanceLocator key
 
         Upload instanceLocator ->
-            handleUpload model instanceLocator
+            handleUpdateStatus model instanceLocator Uploading
 
         ShowSettings instanceLocator ->
-            handleShowSettings model instanceLocator
+            handleUpdateStatus model instanceLocator Settings
 
         Wait instanceLocator ->
-            handleWait model instanceLocator
+            handleUpdateStatus model instanceLocator Waiting
 
         Start instanceLocator ->
             handleStart model instanceLocator
@@ -48,6 +52,9 @@ update msg model =
 
         Stop instanceLocator ->
             handleStop model instanceLocator
+
+        FilesSelect instanceLocator fileInstances ->
+            handleFilesSelect model instanceLocator fileInstances
 
         NewMessage message ->
             handleNewMessage model message
@@ -148,8 +155,8 @@ updateInstanceOfExperiment model instanceLocator updateFunction =
             |> andThen updateExperiment
 
 
-updateInstance : Model -> InstanceLocator -> (Instance -> Instance) -> ( Model, Cmd Msg )
-updateInstance model instanceLocator updateFunction =
+updateInstanceWithCmd : Model -> InstanceLocator -> (Instance -> Instance) -> Cmd Msg -> ( Model, Cmd Msg )
+updateInstanceWithCmd model instanceLocator updateFunction cmd =
     let
         updatedExperiments =
             updateInstanceOfExperiment model instanceLocator updateFunction
@@ -162,32 +169,81 @@ updateInstance model instanceLocator updateFunction =
                 Nothing ->
                     model
     in
-        ( updatedModel, Cmd.none )
+        ( updatedModel, cmd )
 
 
-handleShowSettings : Model -> InstanceLocator -> ( Model, Cmd Msg )
-handleShowSettings model instanceLocator =
+updateInstance : Model -> InstanceLocator -> (Instance -> Instance) -> ( Model, Cmd Msg )
+updateInstance model instanceLocator updateFunction =
+    updateInstanceWithCmd model instanceLocator updateFunction Cmd.none
+
+
+handleFilePostResult : Model -> InstanceLocator -> Result Http.Error Success -> ( Model, Cmd Msg )
+handleFilePostResult model instanceLocator result =
+    case result of
+        Ok response ->
+            let
+                updateInstanceStatus instance =
+                    { instance | status = Settings }
+
+                _ =
+                    Debug.log "File uploaded." response
+            in
+                updateInstance model instanceLocator updateInstanceStatus
+
+        Err error ->
+            let
+                _ =
+                    Debug.log "File upload failed!" error
+            in
+                model ! []
+
+
+sendFileToServer : Model -> InstanceLocator -> NativeFile -> Cmd Msg
+sendFileToServer model instanceLocator buf =
     let
-        updateInstanceStatus instance =
-            { instance | status = Settings }
+        { uploadUrl } =
+            model.config
+
+        url =
+            uploadUrl instanceLocator
+
+        body =
+            Http.multipartBody
+                [ FileReader.filePart "file" buf
+                ]
     in
-        updateInstance model instanceLocator updateInstanceStatus
+        Http.post url body Decoders.successDecoder
+            |> Http.send (FilePostResult instanceLocator)
 
 
-handleUpload : Model -> InstanceLocator -> ( Model, Cmd Msg )
-handleUpload model instanceLocator =
+handleFilesSelect : Model -> InstanceLocator -> List NativeFile -> ( Model, Cmd Msg )
+handleFilesSelect model instanceLocator files =
     let
-        updateInstanceStatus instance =
-            { instance | status = Uploading }
+        updateInstanceFiles instance =
+            { instance
+                | status = Uploading
+                , files = files
+            }
+
+        cmd =
+            case List.head files of
+                Just file ->
+                    sendFileToServer model instanceLocator file
+
+                Nothing ->
+                    Cmd.none
+
+        _ =
+            Debug.log "file" "onChange"
     in
-        updateInstance model instanceLocator updateInstanceStatus
+        updateInstanceWithCmd model instanceLocator updateInstanceFiles cmd
 
 
-handleWait : Model -> InstanceLocator -> ( Model, Cmd Msg )
-handleWait model instanceLocator =
+handleUpdateStatus : Model -> InstanceLocator -> InstanceStatus -> ( Model, Cmd Msg )
+handleUpdateStatus model instanceLocator status =
     let
         updateInstanceStatus instance =
-            { instance | status = Waiting }
+            { instance | status = status }
     in
         updateInstance model instanceLocator updateInstanceStatus
 

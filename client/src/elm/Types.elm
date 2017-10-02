@@ -4,6 +4,7 @@ import Dict exposing (..)
 import Http
 import Material
 import Navigation
+import FileReader exposing (NativeFile)
 
 
 --
@@ -16,18 +17,20 @@ type Msg
     | Send InstanceLocator
     | KeyDown InstanceLocator Keycode
     | Upload InstanceLocator
-    | ShowSettings InstanceLocator
     | Wait InstanceLocator
+    | ShowSettings InstanceLocator
     | Start InstanceLocator
     | Clear InstanceLocator
     | Stop InstanceLocator
     | NewMessage String
+    | FilesSelect InstanceLocator (List NativeFile)
     | InitSession (Result Http.Error Success)
     | Mdl (Material.Msg Msg)
     | NavigateTo Navigation.Location
     | NewUrl String
     | Toggle (List Int)
     | Raise Int
+    | FilePostResult InstanceLocator (Result Http.Error Success)
 
 
 type alias Model =
@@ -71,6 +74,7 @@ type alias Instance =
     , status : InstanceStatus
     , input : String
     , logs : List Log
+    , files : List NativeFile
     }
 
 
@@ -97,6 +101,7 @@ type alias Log =
 type alias Config =
     { wsUrl : String
     , cookieUrl : String
+    , uploadUrl : InstanceLocator -> String
     }
 
 
