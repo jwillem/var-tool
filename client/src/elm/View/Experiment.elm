@@ -222,23 +222,37 @@ viewSettings model instance experiment =
             [ Card.title []
                 [ Card.head [] [ text "Start-Parameter" ]
                 ]
-            , Card.text [ Card.expand, Options.css "margin-top" "-18px" ]
-                [ text "Diese Instanz enthält die Datei: "
-                , i [] [ text (fileName ++ " ") ]
-                , Button.render
-                    Mdl
-                    [ instance.id ]
-                    model.mdl
-                    [ Button.icon
-                    , Button.ripple
-                    , Options.onClick (Clear ( experiment.id, (toString instance.id) ))
-                    ]
-                    [ Icon.view "delete" [ Color.text Color.accent ] ]
-                , grid []
-                    [ cell [ size All 6 ]
+            , Card.text
+                [ Card.expand
+                , Options.css "margin-top" "-32px"
+                , Options.css "display" "flex"
+                , Options.css "flex-direction" "column"
+                ]
+                [ grid []
+                    [ cell
+                        [ size All 12 ]
+                        [ text "Diese Instanz enthält die Datei: "
+                        , i [] [ text (fileName ++ " ") ]
+                        , Button.render
+                            Mdl
+                            [ instance.id ]
+                            model.mdl
+                            [ Button.icon
+                            , Button.ripple
+                            , Options.onClick (Clear ( experiment.id, (toString instance.id) ))
+                            ]
+                            [ Icon.view "delete" [ Color.text Color.accent ] ]
+                        ]
+                    , cell
+                        [ size All 5
+                        , Options.css "display" "flex"
+
+                        -- , Options.css "flex" "1"
+                        , Options.css "align-items" "flex-start"
+                        ]
                         [ Diagrams.portsDiagram instance
                         ]
-                    , cell [ size All 6 ]
+                    , cell [ size All 7 ]
                         [ Textfield.render Mdl
                             [ instance.id + instance.id ]
                             model.mdl

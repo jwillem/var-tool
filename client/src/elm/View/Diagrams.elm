@@ -13,7 +13,10 @@ import Types exposing (..)
 portsDiagram : Instance -> Html Msg
 portsDiagram instance =
     svg
-        [ width "250", height "250", viewBox "0 0 250 250" ]
+        [ viewBox "9 9 260 260"
+        , preserveAspectRatio "xMinYMid meet"
+        , Attributes.style "flex:0.85;"
+        ]
         [ Svg.path
             [ d
                 """
@@ -30,11 +33,11 @@ portsDiagram instance =
         , Svg.path
             [ d
                 """
-                M10,140 L110,140 L110,240 L10,240 Z
-                M110,195 L170,195
-                A30,30 0 0,1 200,165
-                M170,195
-                A30,30 0 0,0 200,225
+                M10,120 L110,120 L110,220 L10,220 Z
+                M110,175 L170,175
+                A30,30 0 0,1 200,145
+                M170,175
+                A30,30 0 0,0 200,205
                 """
             , Attributes.style "fill: none;stroke:rgba(0,0,0,.54);"
             ]
@@ -43,18 +46,18 @@ portsDiagram instance =
             [ x "140"
             , y "60"
             , textAnchor "middle"
-            , Attributes.style "fill:rgba(0,0,0,.7);"
+            , Attributes.style "fill:rgba(0,0,0,.7);font-size: 15pt;"
             ]
             [ text "Out" ]
         , text_
             [ x "140"
-            , y "190"
+            , y "170"
             , textAnchor "middle"
-            , Attributes.style "fill:rgba(0,0,0,.7);"
+            , Attributes.style "fill:rgba(0,0,0,.7);font-size: 15pt;"
             ]
             [ text "In" ]
         , (ports instance.portsOut ( "60", "15" ))
-        , (ports instance.portsIn ( "60", "145" ))
+        , (ports instance.portsIn ( "60", "125" ))
         ]
 
 
@@ -62,12 +65,12 @@ ports : List Int -> ( String, String ) -> Svg Msg
 ports instancePorts ( coordX, coordY ) =
     let
         viewPort port_ =
-            tspan [ x coordX, dy "15" ] [ text (toString port_) ]
+            tspan [ x coordX, dy "20" ] [ text (toString port_) ]
     in
         text_
             [ x coordX
             , y coordY
             , textAnchor "middle"
-            , Attributes.style "fill:rgba(0,0,0,.7);"
+            , Attributes.style "fill:rgba(0,0,0,.7);font-size: 15pt;"
             ]
             (List.map viewPort instancePorts)

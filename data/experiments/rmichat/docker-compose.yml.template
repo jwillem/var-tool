@@ -1,22 +1,22 @@
 version: '3'
 services:
-  java_1:
+  user_1:
     image: openjdk:8
     volumes:
       - ./1:/app/data
-    container_name: ${COMPOSE_PROJECT_NAME}_java_1
+    container_name: ${COMPOSE_PROJECT_NAME}_user_1
     working_dir: /app/data
     ports:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin | java -cp ${JAR_FILE_1} ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
+    command: tail -F -n1 stdin 2> /dev/null | java -cp ${JAR_FILE_1} ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
 
-  java_2:
+  user_2:
     image: openjdk:8
     volumes:
       - ./2:/app/data
-    container_name: ${COMPOSE_PROJECT_NAME}_java_2
+    container_name: ${COMPOSE_PROJECT_NAME}_user_2
     working_dir: /app/data
     ports:
       - 1099

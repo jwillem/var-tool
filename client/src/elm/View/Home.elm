@@ -69,6 +69,6 @@ viewExperiment model key ( _, experiment ) =
                         [ text experiment.name ]
                     ]
                 , Card.text [ Options.css "margin-top" "-24px" ]
-                    [ text (experiment.lecturer ++ " - " ++ experiment.class) ]
+                    [ text (experiment.class ++ " · " ++ experiment.lecturer) ]
                 ]
             ]

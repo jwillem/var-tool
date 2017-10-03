@@ -82,6 +82,18 @@
     (spit file-path (str input "\n") :append true)
     (send! channel reply)))
 
+(defn handle-start-instance
+  ""
+  [channel payload session-token]
+  (let [{:keys [experimentId instanceId mainClass arguments]} payload]
+    ))
+
+(defn handle-stop-instance
+  ""
+  [channel payload session-token]
+  (let [{:keys [experimentId instanceId]} payload]
+    ))
+
 (defn handle-command-error
   ""
   [channel]
@@ -109,8 +121,8 @@
                  ["command" "request-experiments"] (handle-request-experiments channel)
                  ["command" "add-input"] (handle-add-input channel
                                                            payload session-token)
-                 ["command" "start-instance"] (println "start")
-                 ["command" "stop-instance"] (println "stop")
+                 ["command" "start-instance"] (handle-start-instance channel payload session-token)
+                 ["command" "stop-instance"] (handle-stop-instance channel payload session-token)
                  :else (handle-command-error channel)))))))
 
 
