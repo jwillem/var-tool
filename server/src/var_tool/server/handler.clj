@@ -72,8 +72,8 @@
   ""
   [channel payload session-token]
   (let [{:keys [input experimentId instanceId]} payload
-        log (str "\"" input "\" from Client!")
-        newPayload (records/build-log-payload log experimentId instanceId)
+        ;; log (str "\"" input "\" from Client!")
+        newPayload (records/build-log-payload input experimentId instanceId)
         message (records/build-message "log" newPayload)
         reply (json/write-str message)
         instance-path (build-instance-path session-token experimentId instanceId)
@@ -92,9 +92,10 @@
         app-path "/usr/src/app"
         template ["data/experiments" experimentId "docker-compose.yml.template"]
         template-path (build-file-path template)
-        dc-col ["data/submissions" session-token experimentId "docker-compose.yml"]
-        dc-path (build-file-path dc-col)
-        _ (io/make-parents dc-path)
+        dc-col ["data/submissions" session-token experimentId]
+        dc-path (build-file-path (conj dc-col "docker-compose.yml"))
+        dc-dir (build-file-path dc-col)
+        _ (io/make-parents dc-path) ;; TODO remove
         mainClassKey (keyword (str "MAIN_CLASS_" instanceId))
         argumentsKey (keyword (str "ARGUMENTS_" instanceId))
         env (assoc {}
@@ -104,15 +105,21 @@
         envsubst (sh "sh" "-c" (str "envsubst < " template-path " > " dc-path)
                      :dir app-path 
                      :env env)
-        dc (sh "sh" "-c" (str "docker-compose -f " dc-path " up user_" instanceId)
-               :dir app-path)
-        _ (println envsubst)
+        service-name (str "user_" instanceId)
+        dc (sh "sh" "-c" (str "docker-compose up " service-name)
+               :dir dc-dir)
+        log (:out dc)
+        _ (string/split log #"\n")
+        newPayload (records/build-log-payload log experimentId instanceId)
+        message (records/build-message "log" newPayload)
+        reply (json/write-str message)
+        ;; _ (println envsubst)
         ;; _ (println dc-path)
         ;; _ (println template-path)
         ;; _ (println env)
         _ (println dc)
         ]
-    
+      (send! channel reply) 
     ))
 
 (defn handle-stop-instance
@@ -144,7 +151,7 @@
               ;; TODO return error on java.lang.Exception: JSON error
               command-keyword (json/read-str data :key-fn keyword)
               _ (println "new command: " command-keyword)
-              _ (println "Request: " request)
+              ;; _ (println "Request: " request)
               ;; _ (println "Session: " session-token)
               {:keys [kind subkind payload]} command-keyword]
           (match [kind subkind]

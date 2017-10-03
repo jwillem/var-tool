@@ -93,16 +93,16 @@ viewInstanceOfExperiment model ( _, instance ) experiment =
                     [ viewEmpty model instance experiment ]
 
                 Uploading ->
-                    [ viewUploading model instance experiment ]
+                    [ viewWaiting model instance experiment "Datei wird hochgeladen." ]
 
                 Settings ->
                     [ viewSettings model instance experiment ]
 
-                Waiting ->
-                    [ viewWaiting model instance experiment ]
-
                 Running ->
-                    [ viewRunning model instance experiment ]
+                    if instance.logs == [] then
+                        [ viewWaiting model instance experiment "Instanz wird gestartet." ]
+                    else
+                        [ viewRunning model instance experiment ]
     in
         div
             [ style
@@ -161,34 +161,6 @@ viewEmpty model instance experiment =
                 ]
             , Card.text [ Options.center, Options.css "margin-top" "-24px" ] [ text "Datei hochladen." ]
             ]
-
-
-viewUploading : Model -> Instance -> Experiment -> Html Msg
-viewUploading model instance experiment =
-    Card.view
-        [ Options.css "flex" "1"
-        , Options.css "width" "100%"
-        , Options.center
-
-        -- TODO remove this
-        , Options.onClick (ShowSettings ( experiment.id, (toString instance.id) ))
-        , if model.raised == instance.id then
-            Elevation.e8
-          else
-            Elevation.e2
-        , Elevation.transition 250
-        , Options.onMouseEnter (Raise instance.id)
-        , Options.onMouseLeave (Raise -1)
-        ]
-        [ Card.title []
-            [ Card.head []
-                [ Loading.spinner
-                    [ Loading.active True ]
-                ]
-            ]
-        , Card.text [ Options.center, Options.css "margin-top" "-16px" ]
-            [ text "Datei wird hochgeladen." ]
-        ]
 
 
 viewSettings : Model -> Instance -> Experiment -> Html Msg
@@ -293,8 +265,8 @@ viewSettings model instance experiment =
             ]
 
 
-viewWaiting : Model -> Instance -> Experiment -> Html Msg
-viewWaiting model instance experiment =
+viewWaiting : Model -> Instance -> Experiment -> String -> Html Msg
+viewWaiting model instance experiment label =
     Card.view
         [ Options.css "flex" "1"
         , Options.css "width" "100%"
@@ -316,7 +288,7 @@ viewWaiting model instance experiment =
                 ]
             ]
         , Card.text [ Options.center, Options.css "margin-top" "-16px" ]
-            [ text "Instanz wird gestartet." ]
+            [ text label ]
         ]
 
 

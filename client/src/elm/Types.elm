@@ -88,7 +88,6 @@ type InstanceStatus
     = Empty
     | Uploading
     | Settings
-    | Waiting
     | Running
 
 

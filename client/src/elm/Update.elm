@@ -250,7 +250,7 @@ handleStart model instanceLocator =
             selectInstance model instanceLocator
 
         updateInstanceStatus instance =
-            { instance | status = Waiting }
+            { instance | status = Running }
 
         cmd =
             case instance of
