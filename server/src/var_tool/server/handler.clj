@@ -17,6 +17,7 @@
              [run-server with-channel send! on-receive on-close]]
             [clojure.java.io :as io]
             [clojure.string :as string]
+            [clojure.java.shell :refer [sh]]
             [var-tool.server.records :as records]
             [var-tool.server.fixtures :refer [experiments]]
             ))
@@ -36,9 +37,8 @@
   ""
   [request]
   (let [csrf (get-in request [:session :ring.middleware.anti-forgery/anti-forgery-token])]
-  (println request)
+  ;; (println request)
   ;; implicitly sets cookie via http-header of response
-  ;; (response {:success true :csrf csrf})))
   (response {:success true :csrf *anti-forgery-token*})))
 
 
@@ -52,7 +52,9 @@
         file-path (conj instance-path "foo.jar")
         _ (io/make-parents (build-file-path file-path))
         file (apply io/file file-path)]
-    (println "Uploading Submission" tempfile)
+    (println "Uploading Submission" tempfile experimentId instanceId)
+    ;; name it after experimentId
+    ;; use original extension as new extension
     (io/copy tempfile file) 
     (response {:success true})))
 
@@ -85,13 +87,40 @@
 (defn handle-start-instance
   ""
   [channel payload session-token]
-  (let [{:keys [experimentId instanceId mainClass arguments]} payload]
+  (let [{:keys [experimentId instanceId mainClass arguments]} payload
+        _ (println "Start" experimentId instanceId mainClass arguments session-token)
+        app-path "/usr/src/app"
+        template ["data/experiments" experimentId "docker-compose.yml.template"]
+        template-path (build-file-path template)
+        dc-col ["data/submissions" session-token experimentId "docker-compose.yml"]
+        dc-path (build-file-path dc-col)
+        _ (io/make-parents dc-path)
+        mainClassKey (keyword (str "MAIN_CLASS_" instanceId))
+        argumentsKey (keyword (str "ARGUMENTS_" instanceId))
+        env (assoc {}
+                   :COMPOSE_PROJECT_NAME (str "vartool_rmichat_" session-token)
+                   mainClassKey mainClass
+                   argumentsKey arguments)
+        envsubst (sh "sh" "-c" (str "envsubst < " template-path " > " dc-path)
+                     :dir app-path 
+                     :env env)
+        dc (sh "sh" "-c" (str "docker-compose -f " dc-path " up user_" instanceId)
+               :dir app-path)
+        _ (println envsubst)
+        ;; _ (println dc-path)
+        ;; _ (println template-path)
+        ;; _ (println env)
+        _ (println dc)
+        ]
+    
     ))
 
 (defn handle-stop-instance
   ""
   [channel payload session-token]
-  (let [{:keys [experimentId instanceId]} payload]
+  (let [{:keys [experimentId instanceId]} payload
+        _ (println "Stop" experimentId instanceId)
+        ]
     ))
 
 (defn handle-command-error
@@ -110,12 +139,13 @@
     (on-receive
       channel
       (fn [data]
-        (let [session-token (get-in request [:cookies "var-tool-session" :value])
+        (let [session-token (get-in request [:cookies "ring-session" :value])
               ;; TODO error if session-token empty
               ;; TODO return error on java.lang.Exception: JSON error
               command-keyword (json/read-str data :key-fn keyword)
               _ (println "new command: " command-keyword)
-              _ (println "Session: " session-token)
+              _ (println "Request: " request)
+              ;; _ (println "Session: " session-token)
               {:keys [kind subkind payload]} command-keyword]
           (match [kind subkind]
                  ["command" "request-experiments"] (handle-request-experiments channel)
@@ -129,16 +159,14 @@
 (defn http-handler
   ""
   [handler]
-  (let [token (random/bytes 16)
-        session {:flash false
-                 :store (cookie-store {:key token})
-                 :cookie-attrs {:max-age 7200 :http-only true, :same-site :strict}
-                 :cookie-name "var-tool-session"}
+  (let [session {:flash false
+                 :cookie-attrs {:max-age 7200 :http-only true, :same-site :strict}}
         page (-> site-defaults
                  (assoc :session session)
                  ;; (dissoc :security)
                  )
-        _ (println session)]
+        ;; _ (println session)
+        ]
     (-> handler
         (wrap-json-body {:keywords? true})
         (wrap-json-response)
@@ -157,10 +185,10 @@
 (defn -main [& args]
   (let [port 8080;;(System/getenv "PORT")
         dev? true ;;(System/getenv "IS_DEV")
-        ;; handler (if dev?
-        ;;           (reload/wrap-reload (http-handler #'routes))
-        ;;           (http-handler routes))]
-        handler (http-handler routes)]
+        handler (if dev?
+                  (reload/wrap-reload (http-handler #'routes))
+                  (http-handler routes))]
+        ;; handler (http-handler routes)]
     (println (str "Starting Server on port: " port))
     (run-server handler {:port port})))
 

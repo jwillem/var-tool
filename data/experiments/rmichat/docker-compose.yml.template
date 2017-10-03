@@ -2,6 +2,8 @@ version: '3'
 services:
   user_1:
     image: openjdk:8
+    depends_on:
+      - needed_service
     volumes:
       - ./1:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_user_1
@@ -10,10 +12,12 @@ services:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin 2> /dev/null | java -cp ${JAR_FILE_1} ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
+    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
 
   user_2:
     image: openjdk:8
+    depends_on:
+      - needed_service
     volumes:
       - ./2:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_user_2
@@ -22,8 +26,40 @@ services:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin 2> /dev/null | java -cp ${JAR_FILE_2} ${MAIN_CLASS_2} ${ARGUMENTS_2} >stdout 2>&1
+    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_2} ${ARGUMENTS_2} >stdout 2>&1
 
+  user_3:
+    image: openjdk:8
+    depends_on:
+      - needed_service
+    volumes:
+      - ./3:/app/data
+    container_name: ${COMPOSE_PROJECT_NAME}_user_3
+    working_dir: /app/data
+    ports:
+      - 1099
+    networks:
+      - ${COMPOSE_PROJECT_NAME}
+    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_3} ${ARGUMENTS_3} >stdout 2>&1
+
+  user_4:
+    image: openjdk:8
+    depends_on:
+      - needed_service
+    volumes:
+      - ./4:/app/data
+    container_name: ${COMPOSE_PROJECT_NAME}_user_4
+    working_dir: /app/data
+    ports:
+      - 1099
+    networks:
+      - ${COMPOSE_PROJECT_NAME}
+    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_4} ${ARGUMENTS_4} >stdout 2>&1
+
+  needed_service:
+    image: openjdk:8
+    container_name: ${COMPOSE_PROJECT_NAME}_needed_service
+    command: java --version
 
 networks:
   ${COMPOSE_PROJECT_NAME}:
