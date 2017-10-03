@@ -17,7 +17,6 @@ type Msg
     | Send InstanceLocator
     | KeyDown InstanceLocator Keycode
     | Upload InstanceLocator
-    | Wait InstanceLocator
     | ShowSettings InstanceLocator
     | Start InstanceLocator
     | Clear InstanceLocator
@@ -127,11 +126,15 @@ type alias AddInputPayload =
 type alias StartInstancePayload =
     { experimentId : String
     , instanceId : String
+    , mainClass : String
+    , arguments : String
     }
 
 
 type alias StopInstancePayload =
-    StartInstancePayload
+    { experimentId : String
+    , instanceId : String
+    }
 
 
 type alias MessageBase =

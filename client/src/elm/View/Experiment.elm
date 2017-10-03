@@ -236,7 +236,7 @@ viewSettings model instance experiment =
                     [ Icon.view "delete" [ Color.text Color.accent ] ]
                 , grid []
                     [ cell [ size All 6 ]
-                        [ Diagrams.ports instance
+                        [ Diagrams.portsDiagram instance
                         ]
                     , cell [ size All 6 ]
                         [ Textfield.render Mdl
@@ -272,7 +272,7 @@ viewSettings model instance experiment =
                     model.mdl
                     [ Button.ripple
                     , Button.accent
-                    , Options.onClick (Wait ( experiment.id, (toString instance.id) ))
+                    , Options.onClick (Start ( experiment.id, (toString instance.id) ))
                     ]
                     [ text "Starten" ]
                 ]
@@ -286,8 +286,7 @@ viewWaiting model instance experiment =
         , Options.css "width" "100%"
         , Options.center
 
-        -- TODO remove this
-        , Options.onClick (Start ( experiment.id, (toString instance.id) ))
+        -- , Options.onClick (Start ( experiment.id, (toString instance.id) ))
         , if model.raised == instance.id then
             Elevation.e8
           else

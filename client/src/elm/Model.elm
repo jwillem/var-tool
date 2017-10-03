@@ -1,9 +1,8 @@
 module Model exposing (init)
 
 import WebSocket
-import Http exposing (Request)
+import Http
 import Dict
-import Json.Decode exposing (Decoder)
 import Material
 import Navigation
 
@@ -14,19 +13,7 @@ import Types exposing (..)
 import Route exposing (Route)
 import Encoders
 import Decoders
-
-
-getCookie : String -> Decoder a -> Request a
-getCookie url decoder =
-    Http.request
-        { method = "GET"
-        , headers = []
-        , url = url
-        , body = Http.emptyBody
-        , expect = Http.expectJson decoder
-        , timeout = Nothing
-        , withCredentials = True -- is needed to set cookie with set-cookie-header
-        }
+import Requests
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -51,7 +38,7 @@ init location =
             }
 
         initSession =
-            getCookie config.cookieUrl Decoders.successDecoder
+            Requests.getCookie config.cookieUrl Decoders.successDecoder
                 |> Http.send InitSession
 
         commands =

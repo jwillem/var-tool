@@ -14,6 +14,7 @@ import FileReader exposing (NativeFile)
 import Route exposing (Route)
 import Types exposing (..)
 import Encoders exposing (..)
+import Requests exposing (..)
 import Decoders exposing (..)
 
 
@@ -40,9 +41,6 @@ update msg model =
 
         ShowSettings instanceLocator ->
             handleUpdateStatus model instanceLocator Settings
-
-        Wait instanceLocator ->
-            handleUpdateStatus model instanceLocator Waiting
 
         Start instanceLocator ->
             handleStart model instanceLocator
@@ -210,37 +208,6 @@ handleFilePostResult model instanceLocator result =
                 model ! []
 
 
-sendFileToServer : Model -> InstanceLocator -> NativeFile -> Cmd Msg
-sendFileToServer model instanceLocator buf =
-    let
-        { uploadUrl } =
-            model.config
-
-        url =
-            uploadUrl instanceLocator
-
-        body =
-            Http.multipartBody
-                [ FileReader.filePart "file" buf
-                ]
-
-        csrf =
-            Http.header "X-CSRF-Token" model.csrf
-
-        postWithCsrf =
-            { method = "POST"
-            , headers = [ csrf ]
-            , url = url
-            , body = body
-            , expect = Http.expectJson Decoders.successDecoder
-            , timeout = Nothing
-            , withCredentials = False
-            }
-    in
-        Http.request postWithCsrf
-            |> Http.send (FilePostResult instanceLocator)
-
-
 handleFilesSelect : Model -> InstanceLocator -> List NativeFile -> ( Model, Cmd Msg )
 handleFilesSelect model instanceLocator files =
     case List.head files of
@@ -253,10 +220,7 @@ handleFilesSelect model instanceLocator files =
                     }
 
                 cmd =
-                    sendFileToServer model instanceLocator file
-
-                -- _ =
-                --     Debug.log "file" file
+                    Requests.sendFileToServer model instanceLocator file
             in
                 updateInstanceWithCmd model instanceLocator updateInstanceFiles cmd
 
@@ -276,10 +240,37 @@ handleUpdateStatus model instanceLocator status =
 handleStart : Model -> InstanceLocator -> ( Model, Cmd Msg )
 handleStart model instanceLocator =
     let
+        { config } =
+            model
+
+        ( experimentId, instanceId ) =
+            instanceLocator
+
+        instance =
+            selectInstance model instanceLocator
+
         updateInstanceStatus instance =
-            { instance | status = Running }
+            { instance | status = Waiting }
+
+        cmd =
+            case instance of
+                Just instance ->
+                    let
+                        { mainClass, arguments } =
+                            instance
+
+                        payload =
+                            StartInstancePayload experimentId instanceId mainClass arguments
+
+                        body =
+                            Encoders.startInstanceCommand payload
+                    in
+                        WebSocket.send config.wsUrl body
+
+                Nothing ->
+                    Cmd.none
     in
-        updateInstance model instanceLocator updateInstanceStatus
+        updateInstanceWithCmd model instanceLocator updateInstanceStatus cmd
 
 
 handleClear : Model -> InstanceLocator -> ( Model, Cmd Msg )
@@ -297,10 +288,34 @@ handleClear model instanceLocator =
 handleStop : Model -> InstanceLocator -> ( Model, Cmd Msg )
 handleStop model instanceLocator =
     let
+        { config } =
+            model
+
+        ( experimentId, instanceId ) =
+            instanceLocator
+
+        instance =
+            selectInstance model instanceLocator
+
         updateInstanceStatus instance =
             { instance | status = Settings, logs = [] }
+
+        cmd =
+            case instance of
+                Just instance ->
+                    let
+                        payload =
+                            StopInstancePayload experimentId instanceId
+
+                        body =
+                            Encoders.stopInstanceCommand payload
+                    in
+                        WebSocket.send config.wsUrl body
+
+                Nothing ->
+                    Cmd.none
     in
-        updateInstance model instanceLocator updateInstanceStatus
+        updateInstanceWithCmd model instanceLocator updateInstanceStatus cmd
 
 
 handleInput : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
@@ -362,18 +377,7 @@ handleSend model instanceLocator =
         updateInstanceInput instance =
             { instance | input = "" }
 
-        updatedExperiments =
-            updateInstanceOfExperiment model instanceLocator updateInstanceInput
-
-        updatedModel =
-            case updatedExperiments of
-                Just updatedExperiments ->
-                    { model | experiments = updatedExperiments }
-
-                Nothing ->
-                    model
-
-        command =
+        cmd =
             case instance of
                 Just instance ->
                     let
@@ -388,7 +392,7 @@ handleSend model instanceLocator =
                 Nothing ->
                     Cmd.none
     in
-        ( updatedModel, command )
+        updateInstanceWithCmd model instanceLocator updateInstanceInput cmd
 
 
 handleKeyDown : Model -> InstanceLocator -> Keycode -> ( Model, Cmd Msg )

@@ -6,6 +6,8 @@ services:
       - ./1:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_java_1
     working_dir: /app/data
+    ports:
+      - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
     command: tail -F -n1 stdin | java -cp ${JAR_FILE_1} ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
@@ -16,6 +18,8 @@ services:
       - ./2:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_java_2
     working_dir: /app/data
+    ports:
+      - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
     command: tail -F -n1 stdin 2> /dev/null | java -cp ${JAR_FILE_2} ${MAIN_CLASS_2} ${ARGUMENTS_2} >stdout 2>&1

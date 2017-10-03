@@ -10,8 +10,8 @@ import Svg.Attributes as Attributes exposing (..)
 import Types exposing (..)
 
 
-ports : Instance -> Html Msg
-ports instance =
+portsDiagram : Instance -> Html Msg
+portsDiagram instance =
     svg
         [ width "250", height "250", viewBox "0 0 250 250" ]
         [ Svg.path
@@ -53,22 +53,21 @@ ports instance =
             , Attributes.style "fill:rgba(0,0,0,.7);"
             ]
             [ text "In" ]
-        , text_
-            [ x "60"
-            , y "30"
-            , textAnchor "middle"
-            , Attributes.style "fill:rgba(0,0,0,.7);"
-            ]
-            [ tspan [ x "60", dy "0" ] [ text (toString 1100) ]
-            , tspan [ x "60", dy "15" ] [ text (toString 8080) ]
-            ]
-        , text_
-            [ x "60"
-            , y "160"
-            , textAnchor "middle"
-            , Attributes.style "fill:rgba(0,0,0,.7);"
-            ]
-            [ tspan [ x "60", dy "0" ] [ text (toString 1337) ]
-            , tspan [ x "60", dy "15" ] [ text (toString 4242) ]
-            ]
+        , (ports instance.portsOut ( "60", "15" ))
+        , (ports instance.portsIn ( "60", "145" ))
         ]
+
+
+ports : List Int -> ( String, String ) -> Svg Msg
+ports instancePorts ( coordX, coordY ) =
+    let
+        viewPort port_ =
+            tspan [ x coordX, dy "15" ] [ text (toString port_) ]
+    in
+        text_
+            [ x coordX
+            , y coordY
+            , textAnchor "middle"
+            , Attributes.style "fill:rgba(0,0,0,.7);"
+            ]
+            (List.map viewPort instancePorts)
