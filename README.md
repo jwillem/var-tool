@@ -1,6 +1,12 @@
 # docker-var
 ## Install
+Als erstes wird das Projekt mithilfe von `git clone https://github.com/jwillem/var-tool.git` heruntergeladen.
+Um die Applikation zu starten, werden zunächst die Installationen von Docker [1] und Docker-Compose [2] benötigt.
+Nach einem Ausführen von `docker-compose build` im Projektverzeichnis kann die App mit `docker-compose up` gestartet werden.
 
+[1] https://www.docker.com/community-edition
+
+[2] https://docs.docker.com/compose/install
 ## Enpoints
 - Client: `http://localhost:80/public` or in dev: `http://localhost:80`
 - Websocket: `ws://localhost:8080/ws`
