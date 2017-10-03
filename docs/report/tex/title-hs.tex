@@ -1,0 +1,47 @@
+% Dateiname: titel-hsma.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Titelseite
+% Abmessungen des Deckelfensters bei den Bindemappen.
+% 34mm vom rechten Blattrand
+% 60mm vom oberen Blattrand
+% Fensterhöhe 55mm
+% Fensterbreite 130mm
+%
+% Benutzung:
+% \usepackage[absolute]{textpos}	
+% \include{titel-hsma}
+%
+%Bei der Erstellung der Vorlage wurde als Standard, Schriftgröße 11pt verwendet.
+ 
+% Titel der Arbeit
+\begin{titlepage}
+\begin{textblock*}{130mm}(28mm,28mm) % 4,8cm vom linken Rand und 6,8cmm vom oberen Rand
+  {\includegraphics{logo.pdf}}
+\end{textblock*}%
+\begin{textblock*}{130mm}(48mm,68mm) % 4,8cm vom linken Rand und 6,8cmm vom oberen Rand
+	\centering\huge\bfseries
+	Virtualisierte Arbeitsumgebung für den Test verteilter Systeme
+\end{textblock*}%
+
+%Name
+\begin{textblock*}{130mm}(48mm,105mm)
+	\centering\Large\itshape 
+	Jan-Philipp Willem
+\end{textblock*}
+
+%Rest
+\begin{textblock*}{297mm}(-36mm,150mm) % -46mm muss vielleicht angepasst werden - von Bindungkorrektur abhängig
+	\begin{center}
+		{\scshape\Large Studienarbeit\\ Studiengang Informatik}\\
+		\vspace{2cm}
+		{\scshape\large Fakultät für Informatik\\Hochschule Mannheim}\\
+		\vspace{2cm}
+		{\large 23.06.2017} \\ %Datum
+		\vspace{3,5cm}
+		{\large Betreuerin: Prof. Dr. Sandro Leuchter\\
+		Zweitkorrektor: Prof. ...}
+	\end{center}
+\end{textblock*}
+\end{titlepage}
+\null
+\newpage

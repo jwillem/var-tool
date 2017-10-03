@@ -1,4 +1,4 @@
-\documentclass[10pt,a4paper]{report}
+\documentclass[11pt,a4paper]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[ngerman]{babel}
 \usepackage{graphicx}
@@ -7,6 +7,7 @@
 \usepackage[toc,page]{appendix}
 \usepackage{float}
 \usepackage{pdflscape}
+\usepackage[absolute]{textpos}	
 
 \usepackage{blindtext}
 
@@ -16,7 +17,8 @@
 \setlength{\fboxrule}{1pt}%
 
 \begin{document}
-  \include{tex/title}
+  \include{tex/title-hs}
+  % \include{tex/title}
   \include{tex/abstract}
 
   \pagenumbering{roman}

@@ -66,7 +66,26 @@
   \end{figure}
 \end{landscape}
 \section{Umsetzung}
-\blindtext
+\subsection{Kommunikation über Nachrichten}
+Im Vorfeld wurde ein Nachrichten-Protokoll definiert, welches die Kommunikation zwischen Server und Client standardisiert.
+Dabei heißen Client-Nachrichten \textit{Commands} und Server-Nachrichten \textit{Messages}.
+So können beide Nachrichten-Typen durch ein triviales Merkmal unterschieden werden.
+Jeweilig unterscheiden sich diese weiter in Kinder-Typen und deren \textit{Payloads}.
+Dabei werden die Daten über eine Websocket-Verbindung in einem JSON-Envelope als String übertragen.
+\\\\
+\textbf{Commands:}
+\begin{itemize}
+  \item request-experiments:
+  \item add-input:
+  \item start-instance:
+  \item stop-instance:
+\end{itemize}
+\textbf{Messages:}
+\begin{itemize}
+  \item log:
+  \item reply:
+\end{itemize}
+
 \subsection{Server}
 \blindtext
 \blindtext
