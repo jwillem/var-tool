@@ -107,5 +107,6 @@ instanceDecoder =
 
 successDecoder : Decoder Success
 successDecoder =
-    map Success
+    map2 Success
         (field "success" bool)
+        (field "csrf" string)

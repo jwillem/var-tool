@@ -47,6 +47,7 @@ init location =
             , history = location |> Route.locFor |> Route.init
             , toggles = Dict.empty
             , raised = -1
+            , csrf = ""
             }
 
         initSession =

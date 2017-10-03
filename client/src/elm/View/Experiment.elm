@@ -1,8 +1,8 @@
 module View.Experiment exposing (view)
 
-import Dict exposing (..)
+import Dict
 import Html exposing (..)
-import Html.Attributes exposing (..)
+import Html.Attributes exposing (style, id, type_, for, class)
 import Html.Events exposing (..)
 import Material.Card as Card
 import Material.Color as Color
@@ -13,12 +13,14 @@ import Material.Icon as Icon
 import Material.Button as Button
 import Material.Textfield as Textfield
 import FileReader exposing (..)
+import Material.Grid exposing (grid, stretch, cell, size, Device(..), Cell(..))
 
 
 --
 
 import Types exposing (..)
 import Events exposing (..)
+import View.Diagrams as Diagrams
 
 
 view : Model -> ExperimentId -> Html Msg
@@ -118,11 +120,6 @@ viewInstanceOfExperiment model ( _, instance ) experiment =
             body
 
 
-white : Options.Property c m
-white =
-    Color.text Color.white
-
-
 viewEmpty : Model -> Instance -> Experiment -> Html Msg
 viewEmpty model instance experiment =
     let
@@ -196,48 +193,90 @@ viewUploading model instance experiment =
 
 viewSettings : Model -> Instance -> Experiment -> Html Msg
 viewSettings model instance experiment =
-    Card.view
-        [ Options.css "flex" "1"
-        , Options.css "width" "100%"
-        , if model.raised == instance.id then
-            Elevation.e8
-          else
-            Elevation.e2
-        , Elevation.transition 250
-        , Options.onMouseEnter (Raise instance.id)
-        , Options.onMouseLeave (Raise -1)
-        ]
-        [ Card.title []
-            [ Card.head [] [ text "Start-Parameter" ]
+    let
+        { files } =
+            instance
+
+        fileName =
+            case List.head files of
+                Just file ->
+                    file.name
+
+                Nothing ->
+                    "Error"
+
+        instanceLocator =
+            ( experiment.id, (toString instance.id) )
+    in
+        Card.view
+            [ Options.css "flex" "1"
+            , Options.css "width" "100%"
+            , if model.raised == instance.id then
+                Elevation.e8
+              else
+                Elevation.e2
+            , Elevation.transition 250
+            , Options.onMouseEnter (Raise instance.id)
+            , Options.onMouseLeave (Raise -1)
             ]
-        , Card.text [ Card.expand, Options.css "margin-top" "-18px" ]
-            [ text "Diese Instanz enthält die Datei: "
-            , i [] [ text "RmiChat.jar" ]
-            , Button.render
-                Mdl
-                [ instance.id ]
-                model.mdl
-                [ Button.icon
-                , Button.ripple
-                , Options.onClick (Clear ( experiment.id, (toString instance.id) ))
+            [ Card.title []
+                [ Card.head [] [ text "Start-Parameter" ]
                 ]
-                [ Icon.view "delete" [ Color.text (Color.color Color.Red Color.S800) ] ]
-            ]
-        , Card.actions
-            [ Card.border
-            , Options.css "justify-content" "flex-end"
-            , Options.css "display" "flex"
-            ]
-            [ Button.render Mdl
-                [ instance.id, 0 ]
-                model.mdl
-                [ Button.ripple
-                , Button.accent
-                , Options.onClick (Wait ( experiment.id, (toString instance.id) ))
+            , Card.text [ Card.expand, Options.css "margin-top" "-18px" ]
+                [ text "Diese Instanz enthält die Datei: "
+                , i [] [ text (fileName ++ " ") ]
+                , Button.render
+                    Mdl
+                    [ instance.id ]
+                    model.mdl
+                    [ Button.icon
+                    , Button.ripple
+                    , Options.onClick (Clear ( experiment.id, (toString instance.id) ))
+                    ]
+                    [ Icon.view "delete" [ Color.text Color.accent ] ]
+                , grid []
+                    [ cell [ size All 6 ]
+                        [ Diagrams.ports instance
+                        ]
+                    , cell [ size All 6 ]
+                        [ Textfield.render Mdl
+                            [ instance.id + 50 ]
+                            model.mdl
+                            [ Textfield.label "Main Class"
+                            , Textfield.floatingLabel
+                            , Textfield.text_
+                            , Textfield.value instance.mainClass
+                            , Options.onInput (ChangeMainClass instanceLocator)
+                            ]
+                            []
+                        , Textfield.render Mdl
+                            [ instance.id + 51 ]
+                            model.mdl
+                            [ Textfield.label "Argumente"
+                            , Textfield.floatingLabel
+                            , Textfield.text_
+                            , Textfield.value instance.arguments
+                            , Options.onInput (ChangeArguments instanceLocator)
+                            ]
+                            []
+                        ]
+                    ]
                 ]
-                [ text "Starten" ]
+            , Card.actions
+                [ Card.border
+                , Options.css "justify-content" "flex-end"
+                , Options.css "display" "flex"
+                ]
+                [ Button.render Mdl
+                    [ instance.id, 0 ]
+                    model.mdl
+                    [ Button.ripple
+                    , Button.accent
+                    , Options.onClick (Wait ( experiment.id, (toString instance.id) ))
+                    ]
+                    [ text "Starten" ]
+                ]
             ]
-        ]
 
 
 viewWaiting : Model -> Instance -> Experiment -> Html Msg

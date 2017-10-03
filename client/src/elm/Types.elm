@@ -22,6 +22,8 @@ type Msg
     | Start InstanceLocator
     | Clear InstanceLocator
     | Stop InstanceLocator
+    | ChangeMainClass InstanceLocator String
+    | ChangeArguments InstanceLocator String
     | NewMessage String
     | FilesSelect InstanceLocator (List NativeFile)
     | InitSession (Result Http.Error Success)
@@ -40,6 +42,7 @@ type alias Model =
     , history : List (Maybe Route)
     , toggles : Dict (List Int) Bool
     , raised : Int
+    , csrf : String
     }
 
 
@@ -161,4 +164,6 @@ type alias ReplyPayload a =
 
 
 type alias Success =
-    { success : Bool }
+    { success : Bool
+    , csrf : String
+    }

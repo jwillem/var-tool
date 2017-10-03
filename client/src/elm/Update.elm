@@ -53,6 +53,12 @@ update msg model =
         Stop instanceLocator ->
             handleStop model instanceLocator
 
+        ChangeMainClass instanceLocator input ->
+            handleChangeMainClass model instanceLocator input
+
+        ChangeArguments instanceLocator input ->
+            handleChangeArguments model instanceLocator input
+
         FilesSelect instanceLocator fileInstances ->
             handleFilesSelect model instanceLocator fileInstances
 
@@ -89,20 +95,26 @@ update msg model =
 handleInitSession : Model -> Result Http.Error Success -> ( Model, Cmd Msg )
 handleInitSession model response =
     case response of
-        Ok response ->
+        Ok success ->
             let
                 { config } =
                     model
 
+                { csrf } =
+                    success
+
                 _ =
-                    Debug.log "Session initiated." response
+                    Debug.log "Session initiated." success
 
                 initWebsocket =
                     WebSocket.send
                         config.wsUrl
                         Encoders.requestExperimentsCommand
+
+                updatedModel =
+                    { model | csrf = csrf }
             in
-                model ! [ initWebsocket ]
+                updatedModel ! [ initWebsocket ]
 
         Err error ->
             let
@@ -211,32 +223,45 @@ sendFileToServer model instanceLocator buf =
             Http.multipartBody
                 [ FileReader.filePart "file" buf
                 ]
+
+        csrf =
+            Http.header "X-CSRF-Token" model.csrf
+
+        postWithCsrf =
+            { method = "POST"
+            , headers = [ csrf ]
+            , url = url
+            , body = body
+            , expect = Http.expectJson Decoders.successDecoder
+            , timeout = Nothing
+            , withCredentials = False
+            }
     in
-        Http.post url body Decoders.successDecoder
+        Http.request postWithCsrf
             |> Http.send (FilePostResult instanceLocator)
 
 
 handleFilesSelect : Model -> InstanceLocator -> List NativeFile -> ( Model, Cmd Msg )
 handleFilesSelect model instanceLocator files =
-    let
-        updateInstanceFiles instance =
-            { instance
-                | status = Uploading
-                , files = files
-            }
+    case List.head files of
+        Just file ->
+            let
+                updateInstanceFiles instance =
+                    { instance
+                        | status = Uploading
+                        , files = [ file ]
+                    }
 
-        cmd =
-            case List.head files of
-                Just file ->
+                cmd =
                     sendFileToServer model instanceLocator file
 
-                Nothing ->
-                    Cmd.none
+                -- _ =
+                --     Debug.log "file" file
+            in
+                updateInstanceWithCmd model instanceLocator updateInstanceFiles cmd
 
-        _ =
-            Debug.log "file" "onChange"
-    in
-        updateInstanceWithCmd model instanceLocator updateInstanceFiles cmd
+        Nothing ->
+            model ! []
 
 
 handleUpdateStatus : Model -> InstanceLocator -> InstanceStatus -> ( Model, Cmd Msg )
@@ -261,7 +286,10 @@ handleClear : Model -> InstanceLocator -> ( Model, Cmd Msg )
 handleClear model instanceLocator =
     let
         updateInstanceStatus instance =
-            { instance | status = Empty }
+            { instance
+                | status = Empty
+                , files = []
+            }
     in
         updateInstance model instanceLocator updateInstanceStatus
 
@@ -282,6 +310,24 @@ handleInput model instanceLocator newInput =
             { instance | input = newInput }
     in
         updateInstance model instanceLocator updateInstanceInput
+
+
+handleChangeMainClass : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
+handleChangeMainClass model instanceLocator newInput =
+    let
+        updateInstanceMainClass instance =
+            { instance | mainClass = newInput }
+    in
+        updateInstance model instanceLocator updateInstanceMainClass
+
+
+handleChangeArguments : Model -> InstanceLocator -> String -> ( Model, Cmd Msg )
+handleChangeArguments model instanceLocator newInput =
+    let
+        updateInstanceArguments instance =
+            { instance | arguments = newInput }
+    in
+        updateInstance model instanceLocator updateInstanceArguments
 
 
 selectInstance : Model -> InstanceLocator -> Maybe Instance

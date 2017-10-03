@@ -1,5 +1,4 @@
 (ns var-tool.server.handler
-  (:import (java.util UUID))
   (:require [ring.middleware.reload :as reload]
             [compojure.route :as route]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
@@ -8,7 +7,7 @@
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
             ;; [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.cors :refer [wrap-cors]]
-            ;; [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
+            [ring.middleware.anti-forgery :refer [*anti-forgery-token*]]
             [compojure.core :refer [defroutes GET POST DELETE context]]
             [crypto.random :as random]
             [ring.middleware.session.cookie :refer [cookie-store]]
@@ -35,9 +34,11 @@
 (defn init-session
   ""
   [request]
+  (let [csrf (get-in request [:session :ring.middleware.anti-forgery/anti-forgery-token])]
   (println request)
   ;; implicitly sets cookie via http-header of response
-  (response {:success true}))
+  ;; (response {:success true :csrf csrf})))
+  (response {:success true :csrf *anti-forgery-token*})))
 
 
 (defn upload-submission-for-instance
