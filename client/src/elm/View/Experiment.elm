@@ -240,7 +240,7 @@ viewSettings model instance experiment =
                         ]
                     , cell [ size All 6 ]
                         [ Textfield.render Mdl
-                            [ instance.id + 50 ]
+                            [ instance.id + instance.id ]
                             model.mdl
                             [ Textfield.label "Main Class"
                             , Textfield.floatingLabel
@@ -250,7 +250,7 @@ viewSettings model instance experiment =
                             ]
                             []
                         , Textfield.render Mdl
-                            [ instance.id + 51 ]
+                            [ instance.id + instance.id + 1 ]
                             model.mdl
                             [ Textfield.label "Argumente"
                             , Textfield.floatingLabel
