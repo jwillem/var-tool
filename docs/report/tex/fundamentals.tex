@@ -3,15 +3,15 @@
 
 Dieses Kapitel möchte einige Grundlagen definieren, welche im Kapitel~\ref{ch:main-matter} vorausgesetzt werden.
 Es handelt von der Definition des funktionalen Programmier-Paradigma, welches in den Sprachen Clojure und Elm zum Einsatz kommt.
-Weiterhin werden die Webtechnologien Websockets und \acp{SPA} erklärt, welche das Frontend des \nameref{ch:main-matter}'s nutzt. 
+Weiterhin werden die Webtechnologien \acp{SPA} und Websockets erklärt, welche das Frontend des \nameref{ch:main-matter}'s nutzt. 
 Die Architektur der ganzen Applikation wird maßgebend durch die Trennung in unabhängige Microservices beeinflusst, welche mit Docker realisiert sind.
 \section{Funktionale Programmierung}
 Die funktionale Programmierung gehört zu den Deklarativen Programmierparadigmen und stellt neben der imperativen und objektorientierten Programmierung eines der am Häufigsten genutzten Paradigmen dar.
 \par
 Anders als bei imperativen Sprachen, unterscheiden sich funktionale Sprachen vor Allem an ihrer Unveränderbarkeit (engl. Immutability) von Variablen und ihrer Datenstrukturen.
-Es wird dabei angestrebt, bei einer Veränderung des Zustandes einer Variablen nicht den Inhalt ihrer Referenz zu verändern, sondern stattdessen eine Kopie der Daten zurückzuliefern.
-In der Praxis(TODO: quote) hat sich vielfach herausgestellt, dass sich die häufig verwendete Veränderbarkeit (engl. Mutability) von Zuständen gerade auch in der objektorientierten Programmierung zu häufigen Fehlerquellen führen kann.
-Es wurde jedoch gezeigt, dass das Zurückgeben von Kopien ebenso sehr performant funktionieren kann (TODO: add quote).
+Es wird dabei angestrebt, bei einer Veränderung des Zustandes (engl. State) einer Variablen nicht den Inhalt ihrer Referenz zu verändern, sondern stattdessen eine Kopie der Daten zurückzuliefern.
+In der Praxis{\bfseries (TODO: quote)} hat sich vielfach herausgestellt, dass sich die häufig verwendete Veränderbarkeit (engl. Mutability) von Zuständen gerade auch in der objektorientierten Programmierung zu häufigen Fehlerquellen führen kann.
+Es wurde jedoch gezeigt, dass das Zurückgeben von Kopien ebenso sehr performant funktionieren kann {\bfseries (TODO: add quote)}.
 \par
 Wie der Name schon vermuten lässt basiert die funktionale Programmierung zu größten Teilen aus Funktionen. 
 Diese sind meist als Module gekapselt, welche nach einer bestimmten Aufgabe gruppiert sind. 
@@ -23,12 +23,13 @@ So sollten Funktionen als Daten-Transformationen verstanden werden: Man erhält 
 \par
 Da Funktionen selbst auch Typen darstellen, können sie ebenso als Parameter anderer Funktionen dienen, welche man dann auch als Funktionen Höherer Ordnung (engl. Higher Order Funktions) bezeichnet.
 Mit dieser Voraussetzung können Verhalten aus einer aufzurufenden Funktion herausgelöst werden, womit das jeweilige Verhalten dynamisch bestimmt werden kann.
-Dies wird oft auch als Callbacks bezeichnet.
-Hilfreich sind bei dieser Vorgehensweise auch so genannte Lamdas, welche Funktionen darstellen, die inline definiert werden können und somit anonym \ac{bzw.} Unbenannt sind.
+Diese Art von funktionen werden auch als Callbacks bezeichnet.
+Hilfreich sind bei dieser Vorgehensweise auch so genannte Lamdas oder Closures, welche Funktionen darstellen, die inline definiert werden können und somit anonym \ac{bzw.} Unbenannt sind.
 \par
 Grundsätzlich werden funktionale Sprachen nochmals zwischen solchen Sprachen unterschieden, welche neben anderen Paradigmen auch das Funktionale Paradigma unterstützen und solchen, welche ausschließlich auf den Prinzipien der funktionalen Programmierung beruhen.
-Die sogenannten reinen funktionalen Sprachen verbieten \ac{bspw.} eine jegliche Möglichkeit Seiteneffekte auszuführen und sind sehr oft strikt typisiert.
-In Multiparadigmensprachen beruhen viele funktionale Prinzipien auf deren Einsatz und der generellen Bedachtheit des jeweiligen Programmierers \ac{bzw.} des einsetzenden Teams.
+Die sogenannten reinen funktionalen Sprachen haben nicht einmal \ac{bspw.} die Möglichkeit Seiteneffekte auszuführen und sind sehr oft strikt typisiert.
+In Multiparadigmensprachen beruhen viele funktionale Prinzipien und deren Erfolg, auf deren Einsatz und der generellen Bedachtheit des jeweiligen Programmierers \ac{bzw.} des einsetzenden Teams.
+Man mag diese Prinzipien auch (Programming-)Patterns nennen, welche es zu befolgen, oder missverstehen gilt.
 
 \section{Verwendete Programmiersprachen}
 Das Projekt verwendet für den Server die Sprache Clojure, wohingegen der Client mithilfe von Elm umgesetzt ist.
@@ -41,10 +42,22 @@ Das Projekt verwendet für den Server die Sprache Clojure, wohingegen der Client
 \par
 \blindtext
 \section{Eingesetzte Webtechnologien}
-\subsection{Websockets}
-\blindtext
 \subsection{\aclp{SPA}}
-\blindtext
+Einzelseiten-Webanwendungen (engl. \aclp{SPA}) stellen eine spezielle Art einer Webanwendung dar.
+Sie unterscheiden sich zu einer klassischen Webseite dahingehend, dass sie nur aus einem einzelnen Html-Dokument bestehen und ihren Inhalt dynamisch nachladen.
+Innerhalb dieser Einzelseite wird ebenso Java-Script-Code geladen, welcher die eigentliche Funktionalität enthält.
+Oft weisen \acp{SPA} außerdem Merkmale von \acp{RIA} auf, da ihre Oberflächen typischerweise eher einer Desktop-Anwendung gleichen, als einer statischen Webseite. In diesem Kontext spricht man deswegen auch von so genannten Web-Apps.
+\par
+Da eine Verlagerung von sonst in einem Server enthaltene Präsentations-Logik stattfindet, resultiert diese Web-Architektur in einem Fat-Client.
+Es wird dadurch die Serverlast reduziert und gleichzeitig die Grundlage für einen flüssigeren Übergang der Darstellung der Oberflächen geschaffen.
+Alternativ dazu endet bei einer normalen Webseite der Präsentationsvorgang bei einem neuen Abfragen einer weiteren Unterseite.
+\par
+Um die zu nutzenden Daten zur Anzeige der Applikation zu erhalten, bedarf es einer gewissen Client-Architektur, welche einzelne \ac{AJAX}-Requests an eine (\ac{REST}-)Schnittstelle schickt, oder Nachrichten mit Hilfe einer beidseitigen Verbindung über Websockets sendet.
+Seit es in der Java-Script-Welt versucht wurde, das Konzept einer \ac{SPA} umzusetzen, war es schwierig, ein vernünftig wartbares System zu entwickeln, welches die anfallenden und zu nutzenden Daten auch vernünftig verarbeiten können.
+Bekannte Vertreter von Libraries und Frameworks, welche die anfallenden Probleme versucht zu lösen, sind Google Angular und Angular 2, beziehungsweise Facebook React oder eine gänzlich neue Sprache wie Elm oder Clojure-Script.
+\subsection{Websockets}
+Websocket-Verbindungen beruhen auf einem gleichnamigen Netzwerkprotokoll, welche eine beidseitige Client-Server-Kommunikation über \ac{TCP} ermöglichen.
+Sie haben jedoch, wie ihr Name es vermuten lässt, wenig mit klassischen Unix-Sockets gemeinsam.
 \section{Container-Virtualisierung mit Docker}
 \begin{figure}
   \centering
@@ -54,7 +67,8 @@ Das Projekt verwendet für den Server die Sprache Clojure, wohingegen der Client
   \label{fig:layers-docker}
 \end{figure}
 Docker\footnote{\url{https://docs.docker.com/}} ist eine Software zum Deployment von Applikationen innerhalb von Containern.
-Im Vergleich zu \acp{VM}, ähnelt sich die Vorgehensweise, jedoch laufen die Prozesse der Container direkt auf dem Host-Betriebssystem.
+Im Vergleich zu \acp{VM} ähnelt sich deren Vorgehensweise, jedoch laufen die Prozesse der Container direkt auf dem Host-Betriebssystem.
+Grundlage dafür sind Bibliotheken, welche im Kernel oder sehr nah an diesem arbeiten, wohingegen klassische \acp{VM} durch ihre potenziell abstrakteren Zwischenschicht, weniger performant arbeiten können.
 Trotz dieser Tatsache sind die Prozesse mithilfe von \ac{u.A.} Control-Groups und Kernel Namespaces voneinander isoliert.
 Weiterhin hat man die Möglichkeit mit gängigen Mandatory-Access-Control-Frameworks wie SE-Linux oder App-Armor die Rechte innerhalb der Container zu beschränken.
 Als Anforderung besteht keine spezifische Hardware-Infrastruktur wie bei beispielsweise VMWare ESXi.
@@ -71,7 +85,7 @@ Falls die über eine Docker-Registry angebotenen Schichten eines Containers noch
 Weiterhin gibt es einen entscheidenden Vorteil gegenüber einer traditionellen \ac{VM}: Ein Dockerfile trägt implizit zur Dokumentation bei, da jede Änderung an einem Container in seinem Rezept ergänzt werden muss, um diese bei einem erneuten Start \ac{bzw.} erneuten Build zu erhalten.
 \par
 Wird eine Applikation in einzelnen Services aufgeteilt, so bietet sich das Tool \textbf{Docker-Compose}\footnote{\url{https://docs.docker.com/compose/overview/}} an.
-Es ermöglicht in einer einzelnen Datei (\texttt{docker-\break compose.yml}) alle Konfigurations-Parameter der einzelnen Containern zu definieren.
+Es ermöglicht in einer einzelnen Datei (\texttt{docker-compose.yml}) alle Konfigurations-Parameter der einzelnen Container zu definieren.
 Das können \ac{bspw.} Volume-Mounts, Ports, Environment-Variables oder Netzwerke sein, welche sonst bei jedem \texttt{docker exec} Command angegeben werden müssten.
 Alternativ dazu stünden eigene und oft fehlerintensive Shell-Scripts um ähnliches zu erreichen. 
 \par
