@@ -1,8 +1,9 @@
 # docker-var
 ## Install
-Als erstes wird das Projekt mithilfe von `git clone https://github.com/jwillem/var-tool.git` heruntergeladen.
-Um die Applikation zu starten, werden zunächst die Installationen von Docker [1] und Docker-Compose [2] benötigt.
-Nach einem Ausführen von `docker-compose build` im Projektverzeichnis kann die App mit `docker-compose up` gestartet werden.
+- Als erstes wird das Projekt mithilfe von `git clone https://github.com/jwillem/var-tool.git` heruntergeladen.
+- Um die Applikation zu starten, werden zunächst die Installationen von Docker [1] und Docker-Compose [2] benötigt.
+- Es muss var-tool/data auf /tmp/vartool gebinded werden. `ln -s $(pwd)/data /tmp/vartool`
+- Nach einem Ausführen von `docker-compose build` im Projektverzeichnis kann die App mit `docker-compose up` gestartet werden.
 
 [1] https://www.docker.com/community-edition
 
