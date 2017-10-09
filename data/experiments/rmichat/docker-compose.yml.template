@@ -12,21 +12,25 @@ services:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
+    command: java -cp rmichat.jar ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
 
+    # tail -f -n1 stdin 2> /dev/null | 
   user_2:
+    # build: ./user
+    # image: ${COMPOSE_PROJECT_NAME}_user_2:latest
     image: openjdk:8
     depends_on:
       - needed_service
     volumes:
-      - ./2:/app/data
+      - "/tmp/vartool/submissions/${SESSION_TOKEN}/rmichat/2:/app/data"
     container_name: ${COMPOSE_PROJECT_NAME}_user_2
     working_dir: /app/data
     ports:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_2} ${ARGUMENTS_2} >stdout 2>&1
+    command: sleep 9999
+    #tail -f stdin -n 1 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_2} ${ARGUMENTS_2} >stdout 2>&1
 
   user_3:
     image: openjdk:8

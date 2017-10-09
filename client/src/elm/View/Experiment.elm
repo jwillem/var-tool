@@ -354,7 +354,7 @@ viewInput model instance experiment =
         Textfield.render Mdl
             [ instance.id ]
             model.mdl
-            [ Textfield.label "Eingabe"
+            [ Textfield.label ">"
             , Textfield.value instance.input
             , onKeyDown (KeyDown instanceLocator)
             , Options.onInput (Input instanceLocator)

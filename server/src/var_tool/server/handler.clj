@@ -89,33 +89,41 @@
   [channel payload session-token]
   (let [{:keys [experimentId instanceId mainClass arguments]} payload
         _ (println "Start" experimentId instanceId mainClass arguments session-token)
-        app-path "/usr/src/app"
-        template ["data/experiments" experimentId "docker-compose.yml.template"]
+        experiments-col ["data/experiments" experimentId]
+        template (conj experiments-col "docker-compose.yml.template")
         template-path (build-file-path template)
-        dc-col ["data/submissions" session-token experimentId]
-        dc-path (build-file-path (conj dc-col "docker-compose.yml"))
-        dc-dir (build-file-path dc-col)
-        _ (io/make-parents dc-path) ;; TODO remove
+        submission-col ["data/submissions" session-token experimentId]
+        df-path (build-file-path (conj experiments-col "user" "Dockerfile"))
+        build-path (build-file-path (conj submission-col "user" "Dockerfile"))
+        dc-path (build-file-path (conj submission-col "docker-compose.yml"))
+        dc-dir (build-file-path submission-col)
+        _ (io/make-parents build-path)
         mainClassKey (keyword (str "MAIN_CLASS_" instanceId))
         argumentsKey (keyword (str "ARGUMENTS_" instanceId))
         env (assoc {}
                    :COMPOSE_PROJECT_NAME (str "vartool_rmichat_" session-token)
+                   :SESSION_TOKEN session-token
                    mainClassKey mainClass
                    argumentsKey arguments)
         envsubst (sh "sh" "-c" (str "envsubst < " template-path " > " dc-path)
-                     :dir app-path 
                      :env env)
+        cp-dockerfile (sh "sh" "-c" (str "cp " df-path " " build-path))
         service-name (str "user_" instanceId)
-        dc (sh "sh" "-c" (str "docker-compose up " service-name)
+        ;; build-dockerfile (sh "sh" "-c" (str "docker-compose build " service-name)
+                          ;; :dir dc-dir)
+        touch-files (sh "sh" "-c" (str "touch " instanceId "/stdin && touch " instanceId "/stdout")
+                        :dir dc-dir)
+        dc (sh "sh" "-c" "pwd"
+               ;; (str "docker-compose up " service-name)
                :dir dc-dir)
         log (:out dc)
-        _ (string/split log #"\n")
+
         newPayload (records/build-log-payload log experimentId instanceId)
         message (records/build-message "log" newPayload)
         reply (json/write-str message)
-        ;; _ (println envsubst)
-        ;; _ (println dc-path)
-        ;; _ (println template-path)
+        _ (println touch-files)
+        _ (println envsubst)
+        ;; _ (println build-dockerfile)
         ;; _ (println env)
         _ (println dc)
         ]
