@@ -26,6 +26,6 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./server:/usr/src/app"
-      - "/tmp/vartool_data:/usr/src/app/data"
+      - "/tmp/vartool:/usr/src/app/data"
     command: lein run
 

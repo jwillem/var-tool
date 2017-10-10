@@ -107,14 +107,14 @@
                    argumentsKey arguments)
         envsubst (sh "sh" "-c" (str "envsubst < " template-path " > " dc-path)
                      :env env)
-        cp-dockerfile (sh "sh" "-c" (str "cp " df-path " " build-path))
+        ;; cp-dockerfile (sh "sh" "-c" (str "cp " df-path " " build-path))
         service-name (str "user_" instanceId)
         ;; build-dockerfile (sh "sh" "-c" (str "docker-compose build " service-name)
                           ;; :dir dc-dir)
+        _ (io/make-parents (build-file-path (conj submission-col instanceId "/stdin")))
         touch-files (sh "sh" "-c" (str "touch " instanceId "/stdin && touch " instanceId "/stdout")
                         :dir dc-dir)
-        dc (sh "sh" "-c" "pwd"
-               ;; (str "docker-compose up " service-name)
+        dc (sh "sh" "-c" (str "docker-compose up " service-name)
                :dir dc-dir)
         log (:out dc)
 

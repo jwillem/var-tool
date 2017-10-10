@@ -10,8 +10,8 @@ Die funktionale Programmierung gehört zu den Deklarativen Programmierparadigmen
 \par
 Anders als bei imperativen Sprachen, unterscheiden sich funktionale Sprachen vor Allem an ihrer Unveränderbarkeit (engl. Immutability) von Variablen und ihrer Datenstrukturen.
 Es wird dabei angestrebt, bei einer Veränderung des Zustandes (engl. State) einer Variablen nicht den Inhalt ihrer Referenz zu verändern, sondern stattdessen eine Kopie der Daten zurückzuliefern.
-In der Praxis{\bfseries (TODO: quote)} hat sich vielfach herausgestellt, dass sich die häufig verwendete Veränderbarkeit (engl. Mutability) von Zuständen gerade auch in der objektorientierten Programmierung zu häufigen Fehlerquellen führen kann.
-Es wurde jedoch gezeigt, dass das Zurückgeben von Kopien ebenso sehr performant funktionieren kann {\bfseries (TODO: add quote)}.
+% In der Praxis hat sich vielfach herausgestellt, dass sich die häufig verwendete Veränderbarkeit (engl. Mutability) von Zuständen gerade auch in der objektorientierten Programmierung zu häufigen Fehlerquellen führen kann.
+% Es wurde jedoch gezeigt, dass das Zurückgeben von Kopien ebenso sehr performant funktionieren kann {\bfseries (TODO: add quote)}.
 \par
 Wie der Name schon vermuten lässt basiert die funktionale Programmierung zu größten Teilen aus Funktionen. 
 Diese sind meist als Module gekapselt, welche nach einer bestimmten Aufgabe gruppiert sind. 
@@ -33,14 +33,11 @@ Man mag diese Prinzipien auch (Programming-)Patterns nennen, welche es zu befolg
 
 \section{Verwendete Programmiersprachen}
 Das Projekt verwendet für den Server die Sprache Clojure, wohingegen der Client mithilfe von Elm umgesetzt ist.
+
 \subsection{Clojure}
-\blindtext
-\par
-\blindtext
+
 \subsection{Elm}
-\blindtext
-\par
-\blindtext
+
 \section{Eingesetzte Webtechnologien}
 \subsection{\aclp{SPA}}
 Einzelseiten-Webanwendungen (engl. \aclp{SPA}) stellen eine spezielle Art einer Webanwendung dar.
@@ -52,12 +49,13 @@ Da eine Verlagerung von sonst in einem Server enthaltene Präsentations-Logik st
 Es wird dadurch die Serverlast reduziert und gleichzeitig die Grundlage für einen flüssigeren Übergang der Darstellung der Oberflächen geschaffen.
 Alternativ dazu endet bei einer normalen Webseite der Präsentationsvorgang bei einem neuen Abfragen einer weiteren Unterseite.
 \par
-Um die zu nutzenden Daten zur Anzeige der Applikation zu erhalten, bedarf es einer gewissen Client-Architektur, welche einzelne \ac{AJAX}-Requests an eine (\ac{REST}-)Schnittstelle schickt, oder Nachrichten mit Hilfe einer beidseitigen Verbindung über Websockets sendet.
-Seit es in der Java-Script-Welt versucht wurde, das Konzept einer \ac{SPA} umzusetzen, war es schwierig, ein vernünftig wartbares System zu entwickeln, welches die anfallenden und zu nutzenden Daten auch vernünftig verarbeiten können.
-Bekannte Vertreter von Libraries und Frameworks, welche die anfallenden Probleme versucht zu lösen, sind Google Angular und Angular 2, beziehungsweise Facebook React oder eine gänzlich neue Sprache wie Elm oder Clojure-Script.
+Um die zu nutzenden Daten zur Anzeige der Applikation zu erhalten, bedarf es einer gewissen Client-Architektur, welche einzelne \acs{AJAX}-Requests an eine (\acs{REST}-)Schnittstelle schickt, oder Nachrichten mit Hilfe einer beidseitigen Verbindung über Websockets sendet.
+Seit in der Java-Script-Welt versucht wurde, das Konzept einer \ac{SPA} umzusetzen, war es schwierig, ein vernünftig wartbares System zu entwickeln.
+Bekannte Vertreter von Libraries und Frameworks, welche die dabei anfallenden Probleme zu lösen versuchen, sind Google Angular und Angular 2, \ac{bzw.} Facebook React oder gänzlich neue Sprachen wie Elm oder Clojure-Script.
 \subsection{Websockets}
-Websocket-Verbindungen beruhen auf einem gleichnamigen Netzwerkprotokoll, welche eine beidseitige Client-Server-Kommunikation über \ac{TCP} ermöglichen.
+Websocket-Verbindungen beruhen auf einem gleichnamigen Netzwerkprotokoll, welche eine beidseitige Client-Server-Kommunikation über \acs{TCP} ermöglichen.
 Sie haben jedoch, wie ihr Name es vermuten lässt, wenig mit klassischen Unix-Sockets gemeinsam.
+Entstanden sind sie aus dem Fehlen einer 
 \section{Container-Virtualisierung mit Docker}
 \begin{figure}
   \centering

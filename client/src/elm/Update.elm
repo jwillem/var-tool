@@ -68,8 +68,6 @@ update msg model =
 
         NavigateTo location ->
             location
-                |> Route.locFor
-                |> urlUpdate model
 
         NewUrl url ->
             model ! [ Navigation.newUrl url ]
