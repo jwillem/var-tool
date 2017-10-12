@@ -116,6 +116,17 @@ Weiterhin wird auf eine passende verarbeitende Funktion verwiesen, oder einen Fe
 Dies geschieht mit dem Unix-Tool \texttt{envsubst} aus der \texttt{gettext}-Suite, welches Umgebungsvariablen in dem Docker-Compose-Template ersetzt.
 Dabei wird die Datei als \texttt{docker-compose.yml} in dem Datenverzeichnis \texttt{data/submissions/\{session-token\}/} des Projekts gespeichert und ausgeführt (\texttt{docker-compose run user\_\{instanceId\}}).
 Es wird zum Ausführen der jeweiligen Instanz das vorher hochgeladene Programmpaket in einem Unterordner mit dem Namen der Instanz-Id verwendet. 
+\\\\
+Um ein Experiment zu definieren wurde folgendes Konzept erarbeitet:
+\begin{itemize}
+  \item \texttt{data/experiments/\{experimentId\}/} \\dient als ein Entry-Point um theoretisch portable „self-contained“ Experimente zu enthalten.
+  \item \texttt{\{experimentId\}/experiment.yml} \\enthält einige beschreibende Eigenschaften eines Experiments.
+    Diese können später im Client genutzt werden.
+  \item \texttt{\{experimentId\}/docker-compose.yml.template} \\beschreibt ein Experiment über enthaltene Services mit seinen spezifizierten Eigenschaften der \texttt{user_\{instanceId\}}-Containern.
+    Es können dort auch andere für die Lösung der Aufgabe nötigen Dienste aufgeführt werden.
+  \item \texttt{\{experimentId\}/user/Dockerfile} \\kann optional in Docker-Compose-Templates genutzt werden, um besondere Konfigurationen an einem Containersystem vornehmen zu können.
+  \end{itemize}
+
 \clearpage
 \begin{verbatim}
 (defn websocket-handler
