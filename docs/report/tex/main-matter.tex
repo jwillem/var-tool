@@ -34,6 +34,7 @@
 \section{Architektur}
 
 \subsection{Geschäftsprozesse}
+{\bfseries State-Charts}
 \begin{landscape}
   \begin{figure}[h]
     \centering
@@ -173,38 +174,45 @@ Auch für den Client wurde zunächst ein Development-Container definiert, welche
 \par
 Die Entwicklung seiner Funktionen wurde stark durch das Typensystem und den Compiler von Elm geprägt, welche sich als sehr hilfreich herausgestellt haben.
 Dazu wurden die Typen in einer Datei \texttt{Types.elm} definiert welche in anderen Elm-Modulen importiert wird.
-Bei der Größe des Projekt ist es noch in Ordnung alle Typendefinitionen in einer Datei zu haben, jedoch sollte man diese in Zukunft bedachtsam in Unter-Module aufteilen.
+Bei der Größe des Projektes ist es noch in Ordnung alle Typendefinitionen in einer Datei zu haben, jedoch sollte man diese in Zukunft bedachtsam in Unter-Module aufteilen.
 \par
 Weiterhin wurden die Json-Encoder definiert, welche ausgehende Nachrichten in eine Json-Representation bringt.
 Ebenso war es wichtig eingehende Nachrichten mittels mehrerer Json-Decoder in Elm-Typen zu konvertieren.
+Man erlangt so eine strikte Typisierung bei sowohl eingehenden- wie auch  ausgehenden Daten.
 Innerhalb dieser, konnte ebenso eine \texttt{match}-Funktion zum Einsatz gebracht werden (Listing 3.2).
 Dabei können in einem \texttt{case}-Statement beliebige Elm-Typen auf einen Match überprüft werden.
 Im Payload-Decoder wird ein Record vom Typ Message-Base mit dem \texttt{kind} von 'message' und den \texttt{subkind}s von 'log' oder 'reply' erwartet.
 Im Code-Beispiel ist ebenso der Log-Payload-Decoder aufgeführt, welcher schließlich eine Log-Message zurückgibt.
 \par Der vorbereitete Decoder kommt anschließend innerhalb der \texttt{update}-Funktion von \texttt{Update.elm} zum Einsatz (Listing 3.3).
 Es wird zunächst überprüft, ob die Dekodierung erfolgreich war und anschließend den beiden Message-Typen zugeordnet, welche jeweilig anders mit den übergebenen Daten umgehen.
-\par Die Umsetzung der Mockups aus Abbildung \ref{fig:ui-mockup-1} und \ref{fig:ui-mockup-2} sind in den Abbildungen \ref{fig:dev-view-1} und \ref{fig:dev-view-2} zu erkennen.
+\par Die Umsetzung der Mockups aus Abbildung~\ref{fig:ui-mockup-1} und~\ref{fig:ui-mockup-2} sind in den Abbildungen~\ref{fig:dev-view-1} und~\ref{fig:dev-view-2} zu erkennen.
 Dabei wurde versucht möglichst alle initialen Ideen zu erhalten und einige Verbesserungen integriert.
 So war in den Mockups vorherig kein Eingabefeld vorhanden, um Eingaben an die laufenden Programme zu senden.
 Weiterhin wurden die Zustände der Instanzansichten vereinfacht. Es sind nun folgende Zustände möglich:
 \begin{itemize}
   \item Empty
     \\ Zeigt den File-Uploader
-    (Abb. \ref{fig:dev-view-2} links oben)
+    (Abb.~\ref{fig:dev-view-2} links oben)
   \item Uploading
     \\ Zeigt eine Warteinformation beim Hochladen der Programmpakete
-    (Abb. \ref{fig:dev-view-2} rechts oben)
+    (Abb.~\ref{fig:dev-view-2} rechts oben)
   \item Settings
     \\ Zeigt die Start-Parameter der Instanz
-    (Abb. \ref{fig:dev-view-2} links unten)
+    (Abb.~\ref{fig:dev-view-2} links unten)
   \item Running
     \\ Zeigt die Logs einer laufenden Instanz
-    (Abb. \ref{fig:dev-view-2} rechts unten)
+    (Abb.~\ref{fig:dev-view-2} rechts unten)
 \end{itemize}
-Die Darstellung der Instanzen aus Abbildung \ref{fig:dev-view-2} ist dynamisch, d.h. die Höhe der angezeigten Instanzen passt sich je nach Instanzanzahl eines Experiments an.
+Die Darstellung der Instanzen aus Abbildung~\ref{fig:dev-view-2} ist dynamisch, d.h. die Höhe der angezeigten Instanzen passt sich je nach Instanzanzahl eines Experiments an.
 Somit wird die verfügbare Fläche des Browserfensters optimal genutzt.
-\par Die angezeigten Experimente in Abbildung \ref{fig:dev-view-1} werden bei einem Neustart der Applikation über die bestehende Websocket-Verbindung abgefragt (request-experiments).
+\par
+Die Dateiauswahl innerhalb einer Instanz (Instanz hat den Zustand \texttt{Empty}) könnte in Zukunft bei geringem Aufwand einen Drag-and-Drop-Container erhalten, welcher das Hochladen vereinfachen würde. 
+\par Die angezeigten Experimente in Abbildung~\ref{fig:dev-view-1} werden bei einem Neustart der Applikation über die bestehende Websocket-Verbindung abgefragt (request-experiments).
 Die dabei erhaltenen Daten werden im Browser-Cache gespeichert und können nach einem Auswählen eines Experiments wiederverwendet werden.
+\par
+Der geplante Admin-Client konnte aus zeitlichen Gründen nicht mehr entwickelt werden.
+Die Übermittlung der Daten kann analog mit der oben entwickelten Methode über ein Command im Client bzw. einem Reply im Server geschehen.
+Die im Admin-Interface anzuzeigenden Daten müssten ebenso noch im Server gesammelt werden.
 \clearpage
 \begin{verbatim}
 messageDecoder : Decoder Message

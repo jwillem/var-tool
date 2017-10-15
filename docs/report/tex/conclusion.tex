@@ -1,15 +1,37 @@
 \chapter{Fazit}
-\begin{itemize}
-  \item Umsetzung mit Kafka leider nicht m"oglich.
-  \item mehraufwand eigenen kafka proxy zu schreiben
-  \item grundüberlegung von kafka kann dennoch in folgenden arbeiten zu thema kommen
-  \item kafka kann log daten empfangen und auch dauerhaft vorhalten
-  \item microservice gedanke kann weiter ausgebaut werden
-  \item Ergebnisse (eigenes Kapitel?)
-  \item Performance!
-  \item websocket sollte über tls erfolgen
-  \item Im Experiment könnte noch bei geringem Aufand ein dnd-container zum einsatz kommen. 
-  \item Admin-Client muss noch in weiterer Arbeit entwickelt werden
-  \item Abschottung der Container muss noch mit bspw iptables geschehen
-\end{itemize}
+Während der Entwicklung hatte sich herausgestellt, dass die eigentliche Überlegung, Apache Kafka für die Integration der einzelnen Services der Applikation zu nutzen, erheblich mehr Aufwand bedeutet hätte.
+In der Vorbereitungsphase wurde eine Bibliothek Namens \textit{kafka-websocket} ausgewählt, welche es versprechen sollte, die Clients über Websocket an Kafka zu verbinden.
+Bei näherer Betrachtung der Library wurde leider erkannt, dass das Format der einzelnen gesendeten Nachrichten an den sogenannten Kafka-Websocket-Proxy schwer zu verändern ist.
+Dies passte jedoch nicht zu dem vorherig überlegten Nachrichten-Schema zur Kommunikation zwischen Server und Client.
+Es wurde statt dem Einsatz von \textit{kafka-websocket} ein eigener Websocket-Endpoint im Server entwickelt, welcher das geplante Nachrichten-Schema umsetzt.
+Die Übermittlung von Log-Daten aus den User-Containern in den Server wurde stattdessen über die Dateiebene des Docker-Hosts gestaltet.
+Die User-Container schreiben eine \texttt{stdout}-Datei und lesen eine \texttt{stdin}-Datei um Eingaben zu akzeptieren.
+Der Server liest die Datei \texttt{stdout} und gibt den Inhalt per Websocket an den Client weiter, bzw. schreibt in die Datei \texttt{stdin} um Eingaben vom Client an den Container weiterzugeben.
+\par
+Die Grundüberlegung bzw. in der Architektur\footnote{Hierzu kann im Repository des Projekts ein Diagramm mit dem Namen \texttt{deployment\_kafka.pdf} gefunden werden.} der Applikation Kafka einzusetzen, könnte in einer weiteren Arbeit erforscht werden.
+Erzeugte Logs der User-Container könnten mit Kafka empfangen und auch persistent gespeichert werden.
+So wäre es denkbar, dass die einzelnen Ergebnisse der Durchführungen der Experimente auch von einem Dozenten im Nachhinein betrachtet werden könnten.
+Im Gesamten würde Kafka ebenso den Micro-Service Gedanke des Projekts weiter ausbauen.
+\par
+Die Verbindung zwischen Client und Server sollte in Zukunft nach aktuellen best Practices vorsorglich besser verschlüsselt werden.
+Dazu kann für HTTP ein SSL-Zertifikat von \ac{bspw.} \textit{let's encrypt} genutzt werden.
+Ebenso sollten die Websocket-Verbindungen mit TLS über WSS eingerichtet werden.
+\par
+Die geplante Abschottung der Container wurde bisher nur mit den Bordmitteln von Docker realisiert.
+Diese ersetzen jedoch nicht den Einsatz von einzelnen Firewall-Rules mithilfe von \ac{bspw.} \textit{iptables}.
+Bei einem tatsächlichen Deployment der Applikation könnte daher Server und Client über einen weiteren Proxy-Container (\textit{nginx}) geleitet werden, der außerdem eine Firewall implementiert.
+\par
+% \begin{itemize}
+  % \item Umsetzung mit Kafka leider nicht m"oglich.
+  % \item mehraufwand eigenen kafka proxy zu schreiben
+  % \item grundüberlegung von kafka kann dennoch in folgenden arbeiten zu thema kommen
+  % \item kafka kann log daten empfangen und auch dauerhaft vorhalten
+  % \item microservice gedanke kann weiter ausgebaut werden
+  % \item Ergebnisse (eigenes Kapitel?)
+  % \item Performance!
+  % \item websocket sollte über tls erfolgen
+  % \item Im Experiment könnte noch bei geringem Aufand ein dnd-container zum einsatz kommen. 
+  % \item Admin-Client muss noch in weiterer Arbeit entwickelt werden
+  % \item Abschottung der Container muss noch mit bspw iptables geschehen
+% \end{itemize}
 \clearpage
