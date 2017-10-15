@@ -99,7 +99,9 @@ Dabei werden die Daten über eine Websocket-Verbindung in einem JSON-Envelope al
 
 \subsection{Server}
 Der Server besteht im Wesentlichen aus einem Webserver basierend auf \textit{http-kit} und \textit{ring} in der Programmiersprache Clojure.
-Um die Entwicklung zu vereinfachen, wurde als erster Schritt ein Development-Container in Docker erstellt, welcher sich bei einer Änderung einer Quellendatei selbst aktualisiert, ohne die Java-VM neu zu starten. Es gibt dort drei Endpoints:
+Um die Entwicklung zu vereinfachen, wurde als erster Schritt ein Development-Container in Docker erstellt, welcher sich bei einer Änderung einer Quellendatei selbst aktualisiert, ohne die Java-VM neu zu starten.
+\\\\
+Es gibt dort drei Endpoints:
 \begin{itemize}
   \item GET: \texttt{server:8080/hello}
     \\ Ankündigen des Clients am Server, Empfangen eines Responses mit \texttt{Set-Cockie}-Header
@@ -114,18 +116,22 @@ Zunächst werden die Nachrichten von ihrer Json-Representation in ein für Cloju
 Weiterhin wird auf eine passende verarbeitende Funktion verwiesen, oder einen Fehler mithilfe von \texttt{handle-\break command-error} an den Websocket-Channel zurückgegeben.
 \par Bei einem Eintreffen eines \texttt{start-instance}-Commands wird ein Docker-Compose-Template eines Experiments mit den übergebenen Daten (Main-Class \& Argumentenliste) befüllt.
 Dies geschieht mit dem Unix-Tool \texttt{envsubst} aus der \texttt{gettext}-Suite, welches Umgebungsvariablen in dem Docker-Compose-Template ersetzt.
-Dabei wird die Datei als \texttt{docker-compose.yml} in dem Datenverzeichnis \texttt{data/submissions/\{session-token\}/} des Projekts gespeichert und ausgeführt (\texttt{docker-compose run user\_\{instanceId\}}).
+Dabei wird die Datei als \texttt{docker-compose.yml} in dem Datenverzeichnis \texttt{data/submissions/\{session-token\}/\{experimentId\}/} des Projekts gespeichert und ausgeführt (\texttt{docker-compose run user\_\{instanceId\}}).
 Es wird zum Ausführen der jeweiligen Instanz das vorher hochgeladene Programmpaket in einem Unterordner mit dem Namen der Instanz-Id verwendet. 
 \\\\
 Um ein Experiment zu definieren wurde folgendes Konzept erarbeitet:
 \begin{itemize}
-  \item \texttt{data/experiments/\{experimentId\}/} \\dient als ein Entry-Point um theoretisch portable „self-contained“ Experimente zu enthalten.
-  \item \texttt{\{experimentId\}/experiment.yml} \\enthält einige beschreibende Eigenschaften eines Experiments.
+  \item \texttt{data/experiments/\{experimentId\}/} \\dient als ein Entry-Point um portable „self-contained“ Experimente zu enthalten.
+  \item \texttt{data/experiments/\{experimentId\}/experiment.yml} \\enthält einige beschreibende Eigenschaften eines Experiments.
     Diese können später im Client genutzt werden.
-  \item \texttt{\{experimentId\}/docker-compose.yml.template} \\beschreibt ein Experiment über enthaltene Services mit seinen spezifizierten Eigenschaften der \texttt{user_\{instanceId\}}-Containern.
+  \item \texttt{data/experiments/\{experimentId\}/docker-compose.yml.template} \\beschreibt ein Experiment über enthaltene Services mit seinen spezifizierten Eigenschaften der \texttt{user\_\{instanceId\}}-Containern.
     Es können dort auch andere für die Lösung der Aufgabe nötigen Dienste aufgeführt werden.
-  \item \texttt{\{experimentId\}/user/Dockerfile} \\kann optional in Docker-Compose-Templates genutzt werden, um besondere Konfigurationen an einem Containersystem vornehmen zu können.
+  \item \texttt{data/experiments/\{experimentId\}/user/Dockerfile} \\kann optional in Docker-Compose-Templates genutzt werden, um besondere Konfigurationen an einem Containersystem vornehmen zu können.
+    Das Beispiel Template nutzt zurzeit das Docker-Image \texttt{openjdk:8}, das beschriebene Dockerfile erbt ebenfalls von diesem.
   \end{itemize}
+  Das Parsen eines \texttt{experiment.yml} erfolgt im Moment noch nicht, ist aber bei geringem Aufwand realisierbar.
+  Die im Client angezeigten Experimente sind in der Datei \texttt{server/src/var\_tool/server/fixtures.clj} definiert.
+  Natürlich sei es dahingestellt, ob das Austauschformat der Experimente als Yaml oder als Clojure-Keyword sinnvoller erscheint.
 
 \clearpage
 \begin{verbatim}
