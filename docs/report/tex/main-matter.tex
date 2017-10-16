@@ -58,8 +58,7 @@
 \begin{landscape}
   \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.5]{deployment.pdf}
-    \par
+    \includegraphics[scale=0.8]{deployment.pdf}
     \caption{Deploymentdiagramm}
     \label{fig:deployment}
   \end{figure}
@@ -301,7 +300,17 @@ handleNewMessage model message =
   \end{figure}
 \end{landscape}
 \section{Erwartungen an die Performance}
+Der Client ist über einen Websocket mit dem Server verbunden.
+D.h. bei einer stabilen Internetverbindung sollten auftretende Logs innerhalb von wenigen Sekunden im Client sichtbar sein.
+Dies ist möglich, da der Client nicht in einem bestimmten Interval nach neuen Logs frägt, sondern aktiv davon benachrichtigt wird.
+\\
+Auf Seiten der User-Container werden die Logs in eine Datei geschrieben und damit gepuffert.
+Der Server wartet auf Änderungen an dieser Datei und gibt die Inhalte an den Client weiter.
+Die Kopplung der User- und Server-Container über die Dateiebene sollte keine Performanceeinbußen bedeuten.
 \section{Installation}
 Als erstes wird das Projekt mithilfe von \texttt{git clone \url{https://github.com/jwillem/var-tool.git}} heruntergeladen.
 Um die Applikation zu starten, werden zunächst die Installationen von Docker\footnote{\url{https://www.docker.com/community-edition}} und Docker-Compose\footnote{\url{https://docs.docker.com/compose/install/}} benötigt.
 Nach einem Ausführen von \texttt{docker-compose build} im Projektverzeichnis kann die App mit \texttt{docker-compose up} gestartet werden.
+\\
+Sollte eine weitere Entwicklung erfolgen, so können die vorbereiteten Development-Container genutzt werden.
+Dazu führt man \texttt{docker-compose -f docker-compose\break .dev.yml up} aus.
