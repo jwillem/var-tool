@@ -7,6 +7,14 @@
     \caption{Container-Übersicht}
     \label{fig:container-intro}
   \end{figure}
+  Diese Kapitel beschreibt die Vorgehensweise und Umsetzung des VAR-Tools.
+  Es wird zunächst ein Mockup des Clients vorgestellt und dann auf die weitere Architektur des Systems eigegangen.
+  Abbildung~\ref{fig:container-intro} zeigt eine Übersicht der geplanten Applikation.
+  Wir haben auf der linken Seite einen Server-Container, welcher auf Java bzw. Clojure aufgebaut ist.
+  Daneben befinden sich mehrere User-Container in denen anschließend Programmpakete eines Studierenden ausgeliefert werden sollen.
+  Auf der rechten Seite ist ein Client-Container sichtbar, welcher aus einem Webserver (Nginx) besteht.
+  Dieser liefert eine statische HTML-Seite aus, in welcher eine Elm-Applikation als Java-Script integriert ist.
+  Die Container laufen auf einem Rechner, auf dem Docker installiert ist und aus einer beliebigen Infrastruktur besteht.
   \clearpage
 
 % \section{Analyse}
@@ -14,6 +22,29 @@
 % \subsection{To-Be}
 
 \section{UI-Mockup}
+Im Vorfeld wurde überlegt, welche Features ein Client zur Darstellung von Instanzlogs besitzen soll.
+Dazu wurden Skizzen auf dem Papier entwickelt, bevor es dazu kommen sollte, ein einfach gehaltenes Design einer Oberfläche zu gestalten.
+\par
+Abbildung~\ref{fig:ui-mockup-1} zeigt eine Übersichtsseite, welche die verfügbaren Experimente als anklickbare Quadrate mit einem beschreibenden Titel darstellt.
+Auf der linken Seite könnte eine Menüleiste enstehen, welche die benötigten Aktionen bereitstellt.
+So gibt es darin ein Link zu der Experimentenübersicht und eine Verlinkung zu einer Hilfe bzw. dem Autor des Tools.
+\par
+Bei einem Öffnen eines Experiments sollen wie in Abbildung~\ref{fig:ui-mockup-2} eine gewisse Anzahl an zugehörigen Instanzen dargestellt werden.
+Diese Instanzen können verschiedene Zustände aufweisen.
+Der erste Zustand wird in der unteren Ecke skizziert und erlaubt eine Dateiauswahl um ein Programmpaket hochzuladen.
+Bei einem Drag-and-Drop einer Datei auf der Instanz soll es ebenso möglich sein, diese zum Hochladen anzunehmen.
+\\
+Die rechte untere Ecke zeigt eine Instanz, welche auf weitere Ereignisse von dem Server wartet.
+Es wird ein beschreibender Text und ein drehendes Warte-Icon dargestellt.
+Dieser Zustand soll bei einem Hochladen und auch bei einem Instanzstart angezeigt werden.
+\\
+Der nächste Zustand (oben links) ermöglicht es, der zu startenden Instanz, eine Hauptklasse innerhalb des Programmpakets und eine Argumentenliste zu übergeben.
+Ebenso wird in einem Schaubild visualisiert, welche Ports an der Instanz geöffnet sind.
+Diese sind nicht zu bearbeiten, sollen aber nochmals auf die Aufgabenbeschreibung erinnern.
+Die hochgeladene Datei wird mit seinem Titel dargestellt und man kann diese auch wieder mit dem Mülleimer-Icon löschen.
+\\
+Die rechte obere Ecke zeigt eine Instanz, welche gestartet wurde und stellt darin geschehene Ausgaben dar.
+Man kann die Instanz mit einem Stop-Icon anhalten.
 \begin{landscape}
   \begin{figure}[h]
     \centering
@@ -49,10 +80,22 @@
   \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{network.pdf}
-    \par
+    % \par
     \caption{Netzwerkdiagramm}
     \label{fig:network}
   \end{figure}
+  
+Es wird ein Rechner benötigt, welcher aus dem Internet oder hochschulintern erreichbar ist.
+  Auf diesem läuft Docker und stellt die Applikation des Projekts bereit.
+  Es kann eine beliebige Anzahl an Clients und Admin-Clients angeboten werden, da das Frontend als Web-Applikation realisiert wurde.
+  \par
+  Innerhalb von Docker existieren mehrere gekapselte Netzwerke, welche an einem Bridge-Interface des Docker-Hosts angeschlossen sind.
+  Es werden nur solche Ports an den Netzwerken geöffnet, welche in einem Container freigegeben werden.
+  Eines dieser Netzwerke stellt die eigentliche Applikation selbst dar und trägt den Namen \textit{vartool\_extern}.
+  Ruft ein Studierender das VAR-Tool auf und startet darin eine Instanz eines Experiments, so wird ein neues Netzwerk angelegt.
+  Dieses Netzwerk ist unabhängig von anderen Experimenten des gleichen und verschiedenen Studierenden.
+  Es wird benannt nach dem Session-Tokens eines Studierenden und des Experimentnamens, \textit{vartool\_\{sessionToken\}\_\{experimentId\}}. 
+
 
 \subsection{Deployment}
 \begin{landscape}
