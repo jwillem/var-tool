@@ -373,6 +373,11 @@ Dies ist möglich, da der Client nicht in einem bestimmten Interval nach neuen L
 Auf Seiten der User-Container werden die Logs in eine Datei geschrieben und damit gepuffert.
 Der Server wartet auf Änderungen an dieser Datei und gibt die Inhalte an den Client weiter.
 Die Kopplung der User- und Server-Container über die Dateiebene sollte keine Performanceeinbußen bedeuten.
+\par
+Es konnten von der Applikation leider noch keine Leistungstests gemacht werden.
+Gerade in Hinsicht auf einen Vergleich zu einem Deployment in einer herkömmlichen \ac{VM} wäre dies jedoch interessant.
+Dies wäre bei einer Überführung des \texttt{docker-compose}-Files in ein \textit{Ansible}\footnote{\url{https://www.ansible.com/ansible-container}}-Playbook möglich, da man über dieses Tool mehrere Deployment-Targets nutzen kann.
+Bei einem leistungsstarken Rechner sollten allerdings problemlos einige Studierende gleichzeitig mehrere Docker-Container starten können.
 \section{Installation}
 Als erstes wird das Projekt mithilfe von \texttt{git clone \url{https://github.com/jwillem/var-tool.git}} heruntergeladen.
 Um die Applikation zu starten, werden zunächst die Installationen von Docker\footnote{\url{https://www.docker.com/community-edition}} und Docker-Compose\footnote{\url{https://docs.docker.com/compose/install/}} benötigt.
