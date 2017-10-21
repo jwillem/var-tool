@@ -31,18 +31,20 @@ So gibt es darin ein Link zu der Experimentenübersicht und eine Verlinkung zu e
 \par
 Bei einem Öffnen eines Experiments sollen wie in Abbildung~\ref{fig:ui-mockup-2} eine gewisse Anzahl an zugehörigen Instanzen dargestellt werden.
 Diese Instanzen können verschiedene Zustände aufweisen.
+\par
 Der erste Zustand wird in der unteren Ecke skizziert und erlaubt eine Dateiauswahl um ein Programmpaket hochzuladen.
 Bei einem Drag-and-Drop einer Datei auf der Instanz soll es ebenso möglich sein, diese zum Hochladen anzunehmen.
-\\
+\par
 Die rechte untere Ecke zeigt eine Instanz, welche auf weitere Ereignisse von dem Server wartet.
 Es wird ein beschreibender Text und ein drehendes Warte-Icon dargestellt.
 Dieser Zustand soll bei einem Hochladen und auch bei einem Instanzstart angezeigt werden.
-\\
+\par
 Der nächste Zustand (oben links) ermöglicht es, der zu startenden Instanz, eine Hauptklasse innerhalb des Programmpakets und eine Argumentenliste zu übergeben.
 Ebenso wird in einem Schaubild visualisiert, welche Ports an der Instanz geöffnet sind.
 Diese sind nicht zu bearbeiten, sollen aber nochmals auf die Aufgabenbeschreibung erinnern.
-Die hochgeladene Datei wird mit seinem Titel dargestellt und man kann diese auch wieder mit dem Mülleimer-Icon löschen.
-\\
+Die hochgeladene Datei wird mit ihrem Namen dargestellt und man kann diese auch wieder mit dem Mülleimer-Icon löschen.
+Daraufhin wird wieder der Upload-Zustand gezeigt.
+\par
 Die rechte obere Ecke zeigt eine Instanz, welche gestartet wurde und stellt darin geschehene Ausgaben dar.
 Man kann die Instanz mit einem Stop-Icon anhalten.
 \begin{landscape}
@@ -87,25 +89,46 @@ Man kann die Instanz mit einem Stop-Icon anhalten.
   
 Es wird ein Rechner benötigt, welcher aus dem Internet oder hochschulintern erreichbar ist.
   Auf diesem läuft Docker und stellt die Applikation des Projekts bereit.
-  Es kann eine beliebige Anzahl an Clients und Admin-Clients angeboten werden, da das Frontend als Web-Applikation realisiert wurde.
+  Die Zahl an Benutzern des Clients und Admin-Clients ist beliebig, da das Frontend als Web-Applikation realisiert wird.
   \par
   Innerhalb von Docker existieren mehrere gekapselte Netzwerke, welche an einem Bridge-Interface des Docker-Hosts angeschlossen sind.
   Es werden nur solche Ports an den Netzwerken geöffnet, welche in einem Container freigegeben werden.
   Eines dieser Netzwerke stellt die eigentliche Applikation selbst dar und trägt den Namen \textit{vartool\_extern}.
   Ruft ein Studierender das VAR-Tool auf und startet darin eine Instanz eines Experiments, so wird ein neues Netzwerk angelegt.
-  Dieses Netzwerk ist unabhängig von anderen Experimenten des gleichen und verschiedenen Studierenden.
-  Es wird benannt nach dem Session-Tokens eines Studierenden und des Experimentnamens, \textit{vartool\_\{sessionToken\}\_\{experimentId\}}. 
+  Dieses Netzwerk ist unabhängig von anderen Experimenten des gleichen und verschiedenen Studierenden, mit dem Namen \textit{vartool\_\{sessionToken\}\_\{experimentId\}}. 
 
 
 \subsection{Deployment}
+Abbildung~\ref{fig:deployment} zeigt die Verteilung der einzelnen Bestandteile der Applikation.
+Die Container Server, User und die Clients werden mithilfe von Docker auf einem Linux-Rechner deployed.
+\par
+Der Client und Admin-Client bestehen jeweils aus dem Webserver \textit{nginx}, welcher ein statisches HTML-Dokument und ein Java-Script Bundle ausliefert, welches aus einer kompilierten Elm-Applikation resultiert.
+Wird die URL eines Clients von einem beliebigen Rechner mit aktuellem Browser aufgerufen, so werden die benötigten Dateien übertragen und die Elm-App gestartet.
+Während der Laufzeit des Clients verbindet sich der jeweilige Browser mit dem Server über einen Websocket.
+Programmpakete welche hochgeladen werden sollen, werden über REST übertragen.
+Es können dort anschließend verschiedene Experimente angezeigt und bei dessen Ausführung seine Ausgaben dargestellt werden.
+Im Admin-Client sollen Statistiken dargestellt werden, welche u.A. die aktuelle Anzahl an experimentierten Studierenden umfasst.
+\par
+Der Server besteht aus einer Java-Umgebung, welche ein Jar mit Clojure-Code ausführt.
+Er hat die Aufgabe, einen Websocket-Endpoint anzubieten, welcher die Clients zur Kommunikation nutzen.
+Ebenso soll dieser ein Endpoint anbieten, welcher ein Upload von Programmpaketen der Studierenden per POST-Request annimmt.
+Jeder Benutzer bekommt einen temporären Ordner zugewiesen, in welchem seine Dateien gespeichert werden sollen.
+Dieser User-Ordner werden anschließend für die zugewiesenen User-Container eines jeweiligen Studierenden verfügbar sein.
+Mit diesem Seiteneffekt, über das File-System des Docker-Hosts, kann ein User-Container auf die jeweiligen Programmpakete zugreifen und diese ausführen.
+\par
+Ein solcher Container kann von dem Server gestartet werden, da der Server auf den Docker-Socket des Hosts zugreifen darf.
+Sowohl die Eingaben wie auch resultierende Ausgaben sollen zunächst auch über das File-System zwischen Server und einzelnem User-Container geteilt werden.
+Der Server reagiert auf die Änderung der Datei und schickt die Ausgaben an den Client.
+
 \begin{landscape}
   \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.8]{deployment.pdf}
+    \includegraphics[scale=0.4]{deployment.pdf}
     \caption{Deploymentdiagramm}
     \label{fig:deployment}
   \end{figure}
 \end{landscape}
+
 \section{Umsetzung}
 Im Folgenden werden Code-Beispiele gezeigt, welche in ihrem vollem Umfang im Repository des Projekts\footnote{\url{https://github.com/jwillem/var-tool}} zu finden sind.
 \subsection{Kommunikation über Nachrichten}
@@ -151,15 +174,15 @@ Es gibt dort drei Endpoints:
   \item \texttt{ws://server:8080/ws}
     \\ Anmeldung von Client an Websocket, Senden und Empfangen von Nachrichten
   \item POST: \texttt{server:8080/experiment/\{experimentId\}/instance/\{instanceId\}}
-    \\ Hochladen der Programmpakete eines Studierenden
+    \\ Hochladen der Programmpakete eines Studierenden; Werden in temporären User-Ordner in \texttt{data/submissions/\{session-token\}/\break\{experimentId\}/\{instanceId\}/\{fileName\}} gespeichert
 \end{itemize}
 % \clearpage
 Um auf eintreffende Nachrichten zu reagieren (\texttt{on-receive}), wurde eine \texttt{match}-Funktion innerhalb des Websocket-Handler genutzt (Listing 3.1).
-Zunächst werden die Nachrichten von ihrer Json-Representation in ein für Clojure passendes Keyword decodiert.
+Zu- nächst werden die Nachrichten von ihrer Json-Repräsentation in ein für Clojure passendes Keyword decodiert.
 Weiterhin wird auf eine passende verarbeitende Funktion verwiesen, oder einen Fehler mithilfe von \texttt{handle-\break command-error} an den Websocket-Channel zurückgegeben.
 \par Bei einem Eintreffen eines \texttt{start-instance}-Commands wird ein Docker-Compose-Template eines Experiments mit den übergebenen Daten (Main-Class \& Argumentenliste) befüllt.
 Dies geschieht mit dem Unix-Tool \texttt{envsubst} aus der \texttt{gettext}-Suite, welches Umgebungsvariablen in dem Docker-Compose-Template ersetzt.
-Dabei wird die Datei als \texttt{docker-compose.yml} in dem Datenverzeichnis \texttt{data/submissions/\{session-token\}/\{experimentId\}/} des Projekts gespeichert und ausgeführt (\texttt{docker-compose run user\_\{instanceId\}}).
+Dabei wird die Datei als \texttt{docker-compose.yml} in dem Datenverzeichnis \texttt{data/submissions/\{session-token\}/\{experimentId\}/} des Projekts gespeichert und ausgeführt (\texttt{docker-compose run user\_\break\{instanceId\}}).
 Es wird zum Ausführen der jeweiligen Instanz das vorher hochgeladene Programmpaket in einem Unterordner mit dem Namen der Instanz-Id verwendet. 
 \\\\
 Um ein Experiment zu definieren wurde folgendes Konzept erarbeitet:
@@ -218,7 +241,7 @@ Die Entwicklung seiner Funktionen wurde stark durch das Typensystem und den Comp
 Dazu wurden die Typen in einer Datei \texttt{Types.elm} definiert welche in anderen Elm-Modulen importiert wird.
 Bei der Größe des Projektes ist es noch in Ordnung alle Typendefinitionen in einer Datei zu haben, jedoch sollte man diese in Zukunft bedachtsam in Unter-Module aufteilen.
 \par
-Weiterhin wurden die Json-Encoder definiert, welche ausgehende Nachrichten in eine Json-Representation bringt.
+Weiterhin wurden die Json-Encoder definiert, welche ausgehende Nachrichten in eine Json-Repräsentation bringt.
 Ebenso war es wichtig eingehende Nachrichten mittels mehrerer Json-Decoder in Elm-Typen zu konvertieren.
 Man erlangt so eine strikte Typisierung bei sowohl eingehenden- wie auch  ausgehenden Daten.
 Innerhalb dieser, konnte ebenso eine \texttt{match}-Funktion zum Einsatz gebracht werden (Listing 3.2).

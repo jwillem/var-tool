@@ -22,9 +22,28 @@ Seit in der Java-Script-Welt versucht wurde, das Konzept einer \ac{SPA} umzusetz
 Bekannte Vertreter von Libraries und Frameworks, welche die dabei anfallenden Probleme zu lösen versuchen, sind Google Angular und Angular 2, \ac{bzw.} Facebook React oder gänzlich neue Sprachen wie Elm oder Clojure-Script.
 
 \subsection{Websockets}
-Websocket-Verbindungen beruhen auf einem gleichnamigen Netzwerkprotokoll, welche eine beidseitige Client-Server-Kommunikation über \acs{TCP} ermöglichen.
+Websocket-Verbindungen beruhen auf einem gleichnamigen Netzwerkprotokoll, welche eine beidseitige Kommunikation von Client und Server über \acs{TCP} ermöglichen.
 Sie haben jedoch, anders wie ihr Name es vermuten lässt, wenig mit klassischen Unix-Sockets gemeinsam.
-Entstanden sind sie aus dem Fehlen einer kontinuierlich nutzbaren Verbindung, im Vergleich zu einzelnen abgeschlossenen HTTP-Requests.
+% Entstanden sind sie aus dem Fehlen einer kontinuierlich nutzbaren Verbindung, im Vergleich zu einzelnen abgeschlossenen HTTP-Requests.
+\par
+Das offene Web wurde anhand des HTTP-Standards nach und nach entwickelt.
+Dieser wurde entworfen um den damaligen Anforderungen gerecht zu werden.
+So erhält man für jede Anfrage an einem Webserver eine passende Antwort desselbigen.
+Allerdings wurde es in den letzten Jahren immer wichtiger, Webseiten noch dynamischer zu gestalten.
+Bei Applikationen welche Informationen in Echtzeit darstellen wollen, kam die Anforderung auf, eine kontinuierlich bestehende Verbindung nutzen zu können.
+\par
+Es gab Ansätze, um dies mit HTTP-Requests zu erreichen.
+Die so genannten langen Abfragen (engl. long polling) waren eines dieser.
+Es wird periodisch eine Anfrage an einen Server geschickt und asynchron auf seine Antwort gewartet.
+Sobald eine Antwort erhalten wurde, sendet man eine neue Anfrage.
+Man erhält damit ein Server-Push-Feature.
+\par
+Websockets stellen eine Alternative zu den Ansätzen auf HTTP-Basis dar.
+Um solch eine Verbindung aufzubauen, wird ein besonderer Request gesendet, welcher den Browser dazu veranlässt, das Übertragungsprotokoll auf WS bzw. WSS umzustellen.
+Eine einmal aufgebaute Verbindung bleibt in beiden Richtungen zunächst dauerhaft offen.
+\par
+Die Ursprünge lagen in einer Diskussion in 2008 und zwölf Versionen später in 2011 wurden die Websockets in allen gängigen Browsern ausgeliefert. 
+
 
 \section{Funktionale Programmierung}
 Die funktionale Programmierung gehört zu den Deklarativen Programmierparadigmen und stellt neben der imperativen und objektorientierten Programmierung eines der am Häufigsten genutzten Paradigmen dar.
@@ -70,15 +89,23 @@ Dadurch kann die benötigte Zeit um die Transformationen auszuführen erheblich 
 Es existieren in einigen anderen Programmiersprachen\footnote{\ac{bspw.} in Elm: http://package.elm-lang.org/packages/avh4/elm-transducers/latest} Module, welche das Konzept der Transducer in ihrem Kontext umgesetzt haben.
 
 \subsection{Elm}
-Elm ist eine rein funktionale Programmiersprache, welche zu Java-Script kompiliert wird.
-Die Syntax ist an ML-Artige Sprachen orientiert.
+Elm\footnote{https://guide.elm-lang.org/} ist eine rein funktionale Programmiersprache, welche zu Java-Script kompiliert wird.
+Die Syntax\footnote{http://elm-lang.org/docs/syntax} ist an ML-Artige Sprachen orientiert.
 Sie wurde konzipiert um eine deklarativen Entwicklung von browserbasierten User-Interfaces zu ermöglichen.
 Um Dinge wie HTML oder SVG abzubilden, existieren Funktionen, welche eine Liste an Eigenschaften eines Elements, sowie eine Liste seine Kinder erwarten.
 Die Manipulationen an dem DOM des Browserfensters werden durch eine optimierte Vorgehensweise berechnet (Virtual DOM).
+\par
 Ihr Compiler nutzt den statisch-typisierten Quellcode um eine möglichst hohe Developer-Experience (DX) zu gestalten.
 So sind \ac{bspw.} seine Fehlermeldungen dazu gedacht, von Menschen gelesen zu werden.
 Es ist eine Interoperabilität zu Java-Script über so genannte Ports möglich, welche die zugesicherte Typensicherheit gewährleistet.
-Im Vergleich zu einfachem JS-Code, verspricht Elm keine Laufzeitfehler zu erzeugen, weil der Compiler durch das Typensystem sehr erfolgreich dabei ist Fehler zu finden.
+Im Vergleich zu einfachem JS-Code, verspricht Elm keine Laufzeitfehler zu erzeugen, weil der Compiler, mithilfe des Typensystems, sehr erfolgreich dabei ist Fehler zu finden.
+\par
+Elm hat einige Gemeinsamkeiten bei ihrem Schriftbild mit Java-Script\footnote{http://elm-lang.org/docs/from-javascript}.
+Allerdings unterscheidet sich Elm dahingehend, dass es zu keinem Zeitpunkt möglich ist, einen \texttt{undefined}- oder \texttt{null}-Wert abzubilden.
+Für optionale Werte, oder solche aus Berechnungen, welche auch fehlschlagen können, werden die Monaden Maybe und Result in der Core-Api von Elm verwendet.
+Maybe stellt einen abstrakten Datentyp dar, welcher einen tatsächlichen Wert enthält (engl. Just) oder ein explizites Nicht-Vorhandensein eines Zustandes (engl. Nothing) in sich trägt.
+Ein Result trägt entweder den Typ eines \texttt{Ok} mit einem Payload oder einen expliziten \texttt{Err} mit einem Fehler-Payload.
+Elm hat eine kluge Records-Definition\footnote{http://elm-lang.org/docs/records}, welche ein einfaches und dennoch direktes aktualisieren von Feldern in typisierten Records zu ermöglichen.
 \par
 Es wird vorgeschlagen, seinen Code in Modulen zu kapseln, welche einer gewissen Struktur folgen, der sogenannten “`The-Elm-Architecture"' (TEA).
 Diese setzt \ac{u.A.} das Vorhandensein jeweils einer \texttt{init-, update-} und \texttt{view-} Funktion und der Deklaration eines \texttt{Model}-Typs pro Modul voraus.
@@ -122,6 +149,5 @@ Wird eine Applikation in einzelnen Services aufgeteilt, so bietet sich das Tool 
 Es ermöglicht in einer einzelnen Datei (\texttt{docker-compose.yml}) alle Konfigurations-Parameter der einzelnen Container zu definieren.
 Das können \ac{bspw.} Volume-Mounts, Ports, Environment-Variables oder Netzwerke sein, welche sonst bei jedem \texttt{docker exec} Command angegeben werden müssten.
 Alternativ dazu stünden eigene und oft fehlerintensive Shell-Scripts um ähnliches zu erreichen. 
-\par
-Es bietet sich auch an, getrennte Environments für Development, Test und Production als zentrale Dokumentation der Applikation zu nutzen (\texttt{docker-\break compose.[env].yml}).
+Es bietet sich auch an, getrennte Environments für Development, Test und Production als zentrale Dokumentation der Applikation zu nutzen (\texttt{docker-compose.[env].yml}).
 
