@@ -70,6 +70,8 @@ Grundsätzlich werden funktionale Sprachen nochmals zwischen solchen Sprachen un
 Die sogenannten reinen funktionalen Sprachen haben nicht einmal \ac{bspw.} die Möglichkeit Seiteneffekte auszuführen und sind sehr oft strikt typisiert.
 In Multiparadigmensprachen beruhen viele funktionale Prinzipien und deren Erfolg, auf deren Einsatz und der generellen Bedachtheit des jeweiligen Programmierers \ac{bzw.} des einsetzenden Teams.
 Man mag diese Prinzipien auch (Programming-)Patterns nennen, welche es zu befolgen, oder missverstehen gilt.
+\par
+Das Kapitel über funktionale Programmierung(S.49 ff.) in \cite{Butcher:2014:SCM:2621977} wurde vom Verfasser der Arbeit für einen guten praktischen Einstieg in die Materie befunden.
 
 \section{Verwendete Programmiersprachen}
 Das Projekt verwendet für den Server die Sprache Clojure, wohingegen der Client mithilfe von Elm umgesetzt ist.
@@ -87,6 +89,7 @@ Ein weiteres bekanntes Merkmal ist das Konzept der Reducer (eager) bzw. Transduc
 Diese ermöglichen es, mehrere Transformationen an einer beliebigen Collection mit \ac{bspw.} \texttt{map, filter, reduce} zusammenzufassen (Komposition).
 Dadurch kann die benötigte Zeit um die Transformationen auszuführen erheblich minimiert werden, weil nicht jede Teil-Transformation einzeln pro Element stattfindet, sondern gemeinsam.
 Es existieren in einigen anderen Programmiersprachen\footnote{\ac{bspw.} in Elm: http://package.elm-lang.org/packages/avh4/elm-transducers/latest} Module, welche das Konzept der Transducer in ihrem Kontext umgesetzt haben.
+\par Als zu empfehlende Literatur zu Clojure sind \cite{Butcher:2014:SCM:2621977} und\break \cite{Higginbotham:2015:CBT:2836843} zu nennen.
 
 \subsection{Elm}
 Elm\footnote{https://guide.elm-lang.org/} ist eine rein funktionale Programmiersprache, welche zu Java-Script kompiliert wird.
@@ -118,7 +121,9 @@ Eine ähnliche Architektur wurde von Facebook's Flux als "`One-Way Data-Flow"' v
 \par
 Weiterhin werden hilfreiche Abstraktionen wie von Websockets oder HTTP-Requests bereitgestellt, welche ebenso Elm-\texttt{Messages} auslösen.
 In diesem Kontext sind auch die Elm-\texttt{Subscriptions} hilfreich, welche \ac{bspw.} ein kontinuierliches Reagieren auf Websocket-Ereignisse ermöglichen.
-
+\par 
+Es existiert bisher noch nicht so viel Literatur zu Elm, allerdings erwiesen sich der Elm-Guide und das Kapitel über Elm in \cite{tate2014seven} als hilfreich.
+Ebenso ist die ursprüngliche Thesis von Evan Czaplicki über Elm interessant zu lesen (\cite{elm-thesis}).
 \section{Container-Virtualisierung mit Docker}
 \begin{figure}
   \centering

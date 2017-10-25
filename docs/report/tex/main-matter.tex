@@ -68,23 +68,43 @@ Man kann die Instanz mit einem Stop-Icon anhalten.
 % Dieses Kapitel
 \subsection{User-Stories}
 Aufgrund seiner Eignung bei agilen Entwicklungsmethoden wurden User-Stories ausgewählt, um als kompakte Beschreibungen der Anforderungen der Applikation zu dienen.
-Abbildung \ref{fig:sequence} zeigt ein Zustandsdiagramm um den Ablauf der Applikation mit seinen einzelnen Features abzubilden.
+Das folgende Schema dient dabei als Vorlage: \\\textit{„Als \{Rolle\} möchte ich \{Ziel/Wunsch\}, um \{Nutzen\}.“}
 \begin{enumerate}
-  \item Als Studierender möchte ich aus einer Liste an Experimenten eines auswählen können um dieses durchführen zu können.
-  \item Als Studierender möchte ich ein Programmpaket hochladen können, damit ich meine Lösung einer Teilaufgabe in einer eigenen Instanz testen kann.
+  \item Als Studierender möchte ich ein Experiment aus einer Liste auswählen, um dieses durchführen zu können.
+  \item Als Studierender möchte ich ein Programmpaket hochladen können, damit ich meine Lösung einer Aufgabe in einer eigenen Instanz testen kann.
   \item Als Studierender möchte ich Änderungen an den Parametern einer Instanz vornehmen können, damit ich den Ablauf meines Programms bewusst von außen beeinflussen kann.
   \item Als Studierender möchte ich eine Instanz meines Programms starten können, um diese mit anderen unabhängigen Instanzen interagieren zu lassen.
-  \item Als Studierender möchte ich die Standard-Ausgaben einer laufenden Instanz meines Programms von außen aktiv verfolgen können, damit ich analysieren kann, wie sich dieses verhält.
+  \item Als Studierender möchte ich die Standard-Ausgaben einer laufenden Instanz meines Programms von außen aktiv verfolgen können, damit ich dessen Verhalten analysieren kann.
   \item Als Studierender möchte ich die Standard-Eingaben einer laufenden Instanz von außen aktiv beeinflussen können, damit ich Eingaben in meinem Programm nutzen kann.
   \item Als Studierender möchte ich eine laufende Instanz anhalten und dessen geladenes Programmpaket zurücksetzen können.
 \end{enumerate}
+Abbildung \ref{fig:state} zeigt ein Zustandsdiagramm um den Ablauf der Applikation mit seinen einzelnen Features abzubilden.
+Ein Studierender beginnt, indem er die URL des VAR-Tools in seinem Browser eingibt.
+Dies hat ein Request des Browsers an den Client zur Folge, woraufhin der Browser die Dateien \texttt{index.html} und \texttt{main.js} erhält.
+Bei Durchführung der ersten User-Story, gelangt ein Studierender zu einem Experiment, welches Instanzen enthält.
+Eine Instanz hat vier verschiedene Zustände: Empty, Waiting, Settings und Running.
+Wird die zweite User-Story angewendet, ändert sich der Zustand der jeweiligen Instanz auf Waiting mit dem Kind-Zustand von Uploading.
+Im Hintergrund sendet die Applikation einen Request an den Server um das ausgewählte Programmpaket hochzuladen.
+Wird eine Antwort erhalten, so wird der Zustand der Instanz auf Settings gesetzt.
+Die Instanz-Parameter im Zustand Settings erfüllen User-Story drei und vier.
+Außerdem kann in diesem Zustand das geladene Programmpaket gelöscht werden (User-Story sieben).
+Wird der Button zum Starten einer Instanz ausgewählt, so wird der Zustand auf Waiting gesetzt, wobei diesmal ein Hinweis auf das Starten angezeigt werden soll (Kind-Zustand von Starting).
+Der Browser sendet eine Anfrage um die jeweilige Instanz zu starten.
+Bei einem Start wird die Instanz mit den Eingaben aus den Instanz-Parametern im Server  vorbereitet und als ein User-Container mit Docker gestartet.
+Nachdem die Applikation im Browser ein Signal des Servers von einem Start der Instanz erhält, wird dort der Zustand Running angezeigt.
+In diesem Zustand ist es möglich, User-Story fünf und sechs anzuwenden.
+D.h. die Ausgaben aus der laufenden Instanz werden kontinuierlich dargestellt und es ist möglich Eingaben zu machen.
+Weiterhin kann dort der andere Teil der User-Story sieben zum Tragen kommen, was ein Anhalten des User-Containers der Instanz auf dem Host zur Folge hat.
+
+
+
 \begin{landscape}
   \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.5]{sequence.pdf}
+    \includegraphics[scale=0.5]{states.pdf}
     \par
-    \caption{Sequenzdiagramm}
-    \label{fig:sequence}
+    \caption{Zustandsdiagramm}
+    \label{fig:state}
   \end{figure}
 \end{landscape}
 
@@ -117,7 +137,7 @@ Wird die URL eines Clients von einem beliebigen Rechner mit aktuellem Browser au
 Während der Laufzeit des Clients verbindet sich der jeweilige Browser mit dem Server über einen Websocket.
 Programmpakete welche hochgeladen werden sollen, werden über REST übertragen.
 Es können dort anschließend verschiedene Experimente angezeigt und bei dessen Ausführung seine Ausgaben dargestellt werden.
-Im Admin-Client sollen Statistiken dargestellt werden, welche u.A. die aktuelle Anzahl an experimentierten Studierenden umfasst.
+Im Admin-Client sollen Statistiken dargestellt werden, welche u.A. die aktuelle Anzahl an experimentierenden Studierenden umfasst.
 \par
 Der Server besteht aus einer Java-Umgebung, welche ein Jar mit Clojure-Code ausführt.
 Er hat die Aufgabe, einen Websocket-Endpoint anzubieten, welcher die Clients zur Kommunikation nutzen.
@@ -384,10 +404,13 @@ Auf Seiten der User-Container werden die Logs in eine Datei geschrieben und dami
 Der Server wartet auf Änderungen an dieser Datei und gibt die Inhalte an den Client weiter.
 Die Kopplung der User- und Server-Container über die Dateiebene sollte keine Performanceeinbußen bedeuten.
 \par
-Es konnten von der Applikation leider noch keine Leistungstests gemacht werden.
-Gerade in Hinsicht auf einen Vergleich zu einem Deployment in einer herkömmlichen \ac{VM} wäre dies jedoch interessant.
+Es wurden noch keine Leistungstests mit der Applikation gemacht, allerdings wäre es gerade in Hinblick auf einen Vergleich zu einem Deployment in einer herkömmlichen \ac{VM} sehr interessant durchzuführen.
 Dies wäre bei einer Überführung des \texttt{docker-compose}-Files in ein \textit{Ansible}\footnote{\url{https://www.ansible.com/ansible-container}}-Playbook möglich, da man über dieses Tool mehrere Deployment-Targets nutzen kann.
-Bei einem leistungsstarken Rechner sollten allerdings problemlos einige Studierende gleichzeitig mehrere Docker-Container starten können.
+Die damit erhaltene generalisierte Provisionierung der Instanz kann sowohl mit bspw. VMWare oder Docker genutzt werden.
+\par
+Wird die Applikation auf einem leistungsstarken Rechner ausgeführt, so sollten allerdings einige User-Container von den Studierenden gestartet werden können.
+Sollte sich die Leistung eines Rechners dennoch als zu gering herausstellen, so könnte man die Applikation mit Docker Swarm oder Google Kubernetes über mehrere Hosts verteilen.
+Es gibt dazu ein sehr breites Ökosystem mit Werkzeugen zu dieser Thematik.
 \section{Installation}
 Als erstes wird das Projekt mithilfe von \texttt{git clone \url{https://github.com/jwillem/var-tool.git}} heruntergeladen.
 Um die Applikation zu starten, werden zunächst die Installationen von Docker\footnote{\url{https://www.docker.com/community-edition}} und Docker-Compose\footnote{\url{https://docs.docker.com/compose/install/}} benötigt.

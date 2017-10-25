@@ -21,6 +21,11 @@ Die geplante Abschottung der Container wurde bisher nur mit den Bordmitteln von 
 Diese ersetzen jedoch nicht den Einsatz von einzelnen Firewall-Rules mithilfe von \ac{bspw.} \textit{iptables}.
 Bei einem tatsächlichen Deployment der Applikation könnte daher Server und Client über einen weiteren Proxy-Container (\textit{nginx}) geleitet werden, der außerdem eine Firewall implementiert.
 \par
+Die Inhalte des Admin-Clients konnten leider nicht mehr erarbeitet werden, weswegen dieser bisher fehlt.
+Ein Merkmal mit dem man die Studierenden zählen könnte, wäre mit dem Einsatz einer ähnlichen Methode auf Seite 87 ff. in \cite{Butcher:2014:SCM:2621977}.
+Dort wird das Konzept eines Clojure-Atoms vorgestellt, mit welchen nebenläufige Zustände implementiert werden können.
+Bei der zu betrachtenden Applikation könnte man einen Studierenden einem Benutzer-Atom zuweisen, welches nach einem Verbinden über einen Websocket geschieht.
+Wird der jeweilige Websocket geschlossen, so könnte man den Studierenden wieder aus der Liste der aktiven Nutzer entfernen.
 % \begin{itemize}
   % \item Umsetzung mit Kafka leider nicht m"oglich.
   % \item mehraufwand eigenen kafka proxy zu schreiben
