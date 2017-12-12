@@ -175,6 +175,7 @@
 {
 	% Add background to title page
 	\AddToShipoutPictureFG*{\includegraphics[width=\paperwidth]{container_intro.pdf}}
+        \label{fig:container}
         % \ThisCenterCornerWallPaper{1}{intro_rails.pdf}
 	\begin{minipage}[b][\paperheight]{\textwidth}
 	\vspace*{5mm}
@@ -193,6 +194,8 @@
 	\else%
 		{\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}%
 	\fi% 
+        \vspace*{1.33cm}
+        \hfill{\tiny > S. \ref{fig:docker}}
 	
 	\vfill
 	
