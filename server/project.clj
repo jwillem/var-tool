@@ -4,6 +4,7 @@
   :min-lein-version "2.0.0"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.1"]
+                 [k2nr/docker "0.0.2"]
                  [io.forward/yaml "1.0.6"]
                  [ring/ring-devel "1.6.2"]
                  [ring/ring-core "1.6.2"]

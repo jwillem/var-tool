@@ -1,65 +1,82 @@
 version: '3'
 services:
   user_1:
-    image: openjdk:8
+    build: 
+      context: ./user
+      args:
+        - "INSTANCE_ID=1"
+        - "FILE=${FILE}"
+    image: ${COMPOSE_PROJECT_NAME}_user_1:latest
+    stdin_open: true
+    tty: true
     depends_on:
       - needed_service
-    volumes:
-      - ./1:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_user_1
     working_dir: /app/data
     ports:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: java -cp rmichat.jar ${MAIN_CLASS_1} ${ARGUMENTS_1} >stdout 2>&1
+    command: java -cp ${FILE} ${MAIN_CLASS_1} ${ARGUMENTS_1}
 
-    # tail -f -n1 stdin 2> /dev/null | 
   user_2:
-    # build: ./user
-    # image: ${COMPOSE_PROJECT_NAME}_user_2:latest
-    image: openjdk:8
+    build: 
+      context: ./user
+      args:
+        - "INSTANCE_ID=2"
+        - "FILE=${FILE}"
+    image: ${COMPOSE_PROJECT_NAME}_user_2:latest
+    stdin_open: true
+    tty: true
     depends_on:
       - needed_service
-    volumes:
-      - "/tmp/vartool/submissions/${SESSION_TOKEN}/rmichat/2:/app/data"
     container_name: ${COMPOSE_PROJECT_NAME}_user_2
     working_dir: /app/data
     ports:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: sleep 9999
-    #tail -f stdin -n 1 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_2} ${ARGUMENTS_2} >stdout 2>&1
+    command: java -cp ${FILE} ${MAIN_CLASS_2} ${ARGUMENTS_2}
 
   user_3:
-    image: openjdk:8
+    build: 
+      context: ./user
+      args:
+        - "INSTANCE_ID=3"
+        - "FILE=${FILE}"
+    image: ${COMPOSE_PROJECT_NAME}_user_3:latest
+    stdin_open: true
+    tty: true
     depends_on:
       - needed_service
-    volumes:
-      - ./3:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_user_3
     working_dir: /app/data
     ports:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_3} ${ARGUMENTS_3} >stdout 2>&1
+    command: java -cp ${FILE} ${MAIN_CLASS_3} ${ARGUMENTS_3}
 
   user_4:
-    image: openjdk:8
+    build: 
+      context: ./user
+      args:
+        - "INSTANCE_ID=4"
+        - "FILE=${FILE}"
+    image: ${COMPOSE_PROJECT_NAME}_user_4:latest
+    stdin_open: true
+    tty: true
     depends_on:
       - needed_service
-    volumes:
-      - ./4:/app/data
     container_name: ${COMPOSE_PROJECT_NAME}_user_4
     working_dir: /app/data
     ports:
       - 1099
     networks:
       - ${COMPOSE_PROJECT_NAME}
-    command: tail -F -n1 stdin 2> /dev/null | java -cp rmichat.jar ${MAIN_CLASS_4} ${ARGUMENTS_4} >stdout 2>&1
+    command: java -cp ${FILE} ${MAIN_CLASS_4} ${ARGUMENTS_4}
 
+# a service may be added, like a DB
   needed_service:
     image: openjdk:8
     container_name: ${COMPOSE_PROJECT_NAME}_needed_service

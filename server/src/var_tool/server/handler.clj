@@ -53,8 +53,8 @@
         _ (io/make-parents (build-file-path file-path))
         file (apply io/file file-path)]
     (println "Uploading Submission" tempfile experimentId instanceId)
-    ;; name it after experimentId
-    ;; use original extension as new extension
+    ;; TODO name it after experimentId
+    ;; TODO use original extension as new extension
     (io/copy tempfile file) 
     (response {:success true})))
 
@@ -82,6 +82,7 @@
         _ (io/make-parents file-path)
         ]
     (spit file-path (str input "\n") :append true)
+    ;; TODO run curl with file as stdin, then exit
     (send! channel reply)))
 
 (defn handle-start-instance
@@ -90,11 +91,16 @@
   (let [{:keys [experimentId instanceId mainClass arguments]} payload
         _ (println "Start" experimentId instanceId mainClass arguments session-token)
         experiments-col ["data/experiments" experimentId]
+        fixtures-col ["data/fixtures" experimentId]
         template (conj experiments-col "docker-compose.yml.template")
         template-path (build-file-path template)
+        fixture-name (str experimentId ".jar")
+        fixture (conj fixtures-col fixture-name)
+        fixture-path (build-file-path fixture)
         submission-col ["data/submissions" session-token experimentId]
         df-path (build-file-path (conj experiments-col "user" "Dockerfile"))
         build-path (build-file-path (conj submission-col "user" "Dockerfile"))
+        file-path (build-file-path (conj submission-col "user" fixture-name))
         dc-path (build-file-path (conj submission-col "docker-compose.yml"))
         dc-dir (build-file-path submission-col)
         _ (io/make-parents build-path)
@@ -103,29 +109,34 @@
         env (assoc {}
                    :COMPOSE_PROJECT_NAME (str "vartool_rmichat_" session-token)
                    :SESSION_TOKEN session-token
+                   :FILE fixture-name
                    mainClassKey mainClass
                    argumentsKey arguments)
         envsubst (sh "sh" "-c" (str "envsubst < " template-path " > " dc-path)
                      :env env)
-        ;; cp-dockerfile (sh "sh" "-c" (str "cp " df-path " " build-path))
+        cp-dockerfile (sh "sh" "-c" (str "cp " df-path " " build-path))
         service-name (str "user_" instanceId)
         ;; build-dockerfile (sh "sh" "-c" (str "docker-compose build " service-name)
                           ;; :dir dc-dir)
         _ (io/make-parents (build-file-path (conj submission-col instanceId "/stdin")))
+        copy-fixture (sh "sh" "-c" (str "cp " fixture-path " " file-path))
         touch-files (sh "sh" "-c" (str "touch " instanceId "/stdin && touch " instanceId "/stdout")
                         :dir dc-dir)
-        dc (sh "sh" "-c" (str "docker-compose up " service-name)
+        dc (sh "sh" "-c" (str "docker-compose up --build --force-recreate -d " service-name)
                :dir dc-dir)
-        log (:out dc)
+        ;; log (:out (sh "sh" "-c" (str "curl --unix-socket /var/run/docker.sock http:/v1.31/containers/vartool_" experimentId "_" session-token "_user_" instanceId "/logs?stdout=1&stderr=1") :dir dc-dir))
+        log (:out (sh "sh" "-c" (str "docker-compose logs user_" instanceId) :dir dc-dir))
 
         newPayload (records/build-log-payload log experimentId instanceId)
         message (records/build-message "log" newPayload)
         reply (json/write-str message)
         _ (println touch-files)
+        _ (println copy-fixture)
         _ (println envsubst)
-        ;; _ (println build-dockerfile)
+        _ (println cp-dockerfile)
         ;; _ (println env)
         _ (println dc)
+        _ (println log)
         ]
       (send! channel reply) 
     ))
@@ -135,6 +146,7 @@
   [channel payload session-token]
   (let [{:keys [experimentId instanceId]} payload
         _ (println "Stop" experimentId instanceId)
+        ;; TODO stop of conatainer
         ]
     ))
 
